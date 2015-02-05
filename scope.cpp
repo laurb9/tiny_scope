@@ -81,7 +81,7 @@ void Scope::renderStatusBar(unsigned timeBase, unsigned minmV, unsigned maxmV){
     display.setCursor(0, SCREEN_HEIGHT-CHR_HEIGHT);
     int timedToggle = (millis() >> 12) & 1; // bounces between 0 and 1 slowly
 
-    if (timedToggle){
+    if (timedToggle && timeBase){
         // show samples per second
         unsigned long sps = round(1000000.0 * PIXELS_PER_TIME / timeBase);
         if (sps >= 1000000)
@@ -97,8 +97,8 @@ void Scope::renderStatusBar(unsigned timeBase, unsigned minmV, unsigned maxmV){
             display.printf("%u.%02u ms", timeBase/1000, (timeBase % 1000)/10);
         }
     }
-    display.setCursor(8*CHR_WIDTH+4, SCREEN_HEIGHT-CHR_HEIGHT);
-    display.printf(" %d.%02d - %d.%02d V", minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
+    display.setCursor(7*CHR_WIDTH+4, SCREEN_HEIGHT-CHR_HEIGHT);
+    display.printf(" %d.%02d:%d.%02d V", minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
 }
 
 /*
