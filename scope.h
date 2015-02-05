@@ -22,9 +22,12 @@
 class Scope {
 protected:
     Display display;
+    unsigned gridX, gridY; /* grid density */
+    unsigned timeBase;
     void renderGrid();
     void renderGraph(unsigned *data, int logicMode);
-    void renderStatusBar(unsigned timeBase, unsigned minmV, unsigned maxmV);
+    void renderStatusBar(Capture capture);
+    void calcTimeBase(unsigned long elapsed, byte samples);
 public:
     Scope(Display display);
     int isFlatLine(Capture capture);

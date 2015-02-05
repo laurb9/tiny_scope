@@ -12,16 +12,41 @@
 Display display(OLED_RESET);
 
 Scope::Scope(Display display)
-    :display(display)
+    :display(display),
+     gridX(10),
+     gridY(PIXELS_PER_VOLT),
+     timeBase(0)
 {};
+
+// Since we round the timebase, it means the grid pixel size must be off.
+// Use a binary multiplier to increase its precision so we don't have to use float.
+// More than about 4 will cause the grid to shift around at high sampling rates
+#define GRID_X_EXTRA_BITS 3
+/*
+ * Calculate nearest round timeBase to fit the grid
+ */
+void Scope::calcTimeBase(unsigned long elapsed, byte samples){
+    // TODO: maybe do this smarter (log to pick scale) ?
+    static byte values[] = {10, 20, 25, 50};
+    timeBase = 0;
+    for (unsigned long scale=1; !timeBase && scale < elapsed/8; scale*=10){
+        for (unsigned i=0; i<sizeof(values); i++){
+            if (values[i] * scale >= elapsed / 10){ // max 10 grid lines
+                timeBase = values[i] * scale;
+                break;
+            }
+        }
+    }
+    gridX = ((long(timeBase) * samples) << GRID_X_EXTRA_BITS) / elapsed;
+}
 
 /*
  * Render graph grid with square units
  */
 void Scope::renderGrid(){
-    for (int x=0; x<SCREEN_WIDTH; x+=PIXELS_PER_TIME){
-        for (int y=0; y<=VOLTS_RANGE; y++){
-            display.drawPixel(x, y*PIXELS_PER_VOLT, WHITE);
+    for (unsigned x=1; x<SCREEN_WIDTH << GRID_X_EXTRA_BITS; x+=gridX){
+        for (unsigned y=0; y<=VOLTS_RANGE; y++){
+            display.drawPixel(x >> GRID_X_EXTRA_BITS, y*gridY, WHITE);
         }
     }
 }
@@ -61,7 +86,7 @@ void Scope::renderGraph(unsigned *data, int logicMode){
 
     // render data graph
     for (x=0; x<SCREEN_WIDTH; x++, data++){
-        y = VOLTS_RANGE * PIXELS_PER_VOLT - round((*data)*PIXELS_PER_VOLT/1000);
+        y = VOLTS_RANGE * gridY - round((*data)*gridY/1000);
         if (logicMode && x>0 && abs(lastY-y)>4){
             if (y-lastY>0){
                 display.drawFastVLine(x-1,lastY,y-lastY+1,WHITE);
@@ -77,13 +102,13 @@ void Scope::renderGraph(unsigned *data, int logicMode){
 /*
  * Display time units, volt range etc
  */
-void Scope::renderStatusBar(unsigned timeBase, unsigned minmV, unsigned maxmV){
+void Scope::renderStatusBar(Capture capture){
     display.setCursor(0, SCREEN_HEIGHT-CHR_HEIGHT);
     int timedToggle = (millis() >> 12) & 1; // bounces between 0 and 1 slowly
 
     if (timedToggle && timeBase){
         // show samples per second
-        unsigned long sps = round(1000000.0 * PIXELS_PER_TIME / timeBase);
+        unsigned long sps = round(1000000.0 * capture.samples / capture.elapsedus);
         if (sps >= 1000000)
             display.print(F("+1 Msps"));
         else if (sps >= 1000)
@@ -97,7 +122,8 @@ void Scope::renderStatusBar(unsigned timeBase, unsigned minmV, unsigned maxmV){
             display.printf(F("%u.%02u ms"), timeBase/1000, (timeBase % 1000)/10);
         }
     }
-    display.setCursor(7*CHR_WIDTH+4, SCREEN_HEIGHT-CHR_HEIGHT);
+    display.setCursor(8*CHR_WIDTH+4, SCREEN_HEIGHT-CHR_HEIGHT);
+    unsigned minmV = capture.minmV, maxmV = capture.maxmV;
     display.printf(F(" %d.%02d:%d.%02d V"), minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
 }
 
@@ -112,10 +138,11 @@ int Scope::isFlatLine(Capture capture){
  * Display scope
  */
 void Scope::displayScope(Capture capture){
-    unsigned timeBase = capture.elapsedus * PIXELS_PER_TIME / capture.samples;
+    display.setCursor(0,0);
+    Scope::calcTimeBase(capture.elapsedus, capture.samples);
     Scope::renderGrid();
     Scope::renderGraph(capture.data, Scope::getLogicMode(capture));
-    Scope::renderStatusBar(timeBase, capture.minmV, capture.maxmV);
+    Scope::renderStatusBar(capture);
 }
 
 /*
