@@ -85,20 +85,20 @@ void Scope::renderStatusBar(unsigned timeBase, unsigned minmV, unsigned maxmV){
         // show samples per second
         unsigned long sps = round(1000000.0 * PIXELS_PER_TIME / timeBase);
         if (sps >= 1000000)
-            display.print("+1 Msps");
+            display.print(F("+1 Msps"));
         else if (sps >= 1000)
-            display.printf("%lu Ksps", sps/1000);
+            display.printf(F("%lu Ksps"), sps/1000);
         else
-            display.printf("%lu sps", sps);
+            display.printf(F("%lu sps"), sps);
     } else {
         if (timeBase < 100){
-            display.printf("%u us", timeBase);
+            display.printf(F("%u us"), timeBase);
         } else {
-            display.printf("%u.%02u ms", timeBase/1000, (timeBase % 1000)/10);
+            display.printf(F("%u.%02u ms"), timeBase/1000, (timeBase % 1000)/10);
         }
     }
     display.setCursor(7*CHR_WIDTH+4, SCREEN_HEIGHT-CHR_HEIGHT);
-    display.printf(" %d.%02d:%d.%02d V", minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
+    display.printf(F(" %d.%02d:%d.%02d V"), minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
 }
 
 /*
@@ -125,11 +125,11 @@ void Scope::displayVoltMeter(Capture capture){
     unsigned minmV = capture.minmV, maxmV = capture.maxmV;
     display.setCursor(2 * CHR_WIDTH, 2 * CHR_HEIGHT);
     display.setTextSize(3);
-    display.printf("%u.%02lu V", maxmV/1000, round((maxmV%1000)/10.0));
+    display.printf(F("%u.%02lu V"), maxmV/1000, round((maxmV%1000)/10.0));
     display.setTextSize(1);
     display.setCursor(2 * CHR_WIDTH, 7 * CHR_HEIGHT);
 
-    display.printf("-%umV", maxmV-minmV);
+    display.printf(F("-%umV"), maxmV-minmV);
     display.setCursor(16 * CHR_WIDTH, 7 * CHR_HEIGHT);
-    display.printf("0.%u%%", (maxmV-minmV)/VOLTS_RANGE);
+    display.printf(F("0.%u%%"), (maxmV-minmV)/VOLTS_RANGE);
 }
