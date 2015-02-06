@@ -31,7 +31,7 @@ void Scope::calcTimeBase(unsigned long elapsed, byte samples){
     timeBase = 0;
     for (unsigned long scale=1; !timeBase && scale < elapsed/8; scale*=10){
         for (unsigned i=0; i<sizeof(values); i++){
-            if (values[i] * scale >= elapsed / 10){ // max 10 grid lines
+            if (MAX_X_GRID_LINES * values[i] * scale >= elapsed){
                 timeBase = values[i] * scale;
                 break;
             }
@@ -44,7 +44,7 @@ void Scope::calcTimeBase(unsigned long elapsed, byte samples){
  * Render graph grid with square units
  */
 void Scope::renderGrid(){
-    for (unsigned x=1; x<SCREEN_WIDTH << GRID_X_EXTRA_BITS; x+=gridX){
+    for (unsigned x=0; x<SCREEN_WIDTH << GRID_X_EXTRA_BITS; x+=gridX){
         for (unsigned y=0; y<=VOLTS_RANGE; y++){
             display.drawPixel(x >> GRID_X_EXTRA_BITS, y*gridY, WHITE);
         }

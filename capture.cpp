@@ -7,10 +7,16 @@
 Capture::Capture(byte adc_pin, byte samples, unsigned rangemV)
     :adc_pin(adc_pin),
      samples(samples),
-     rangemV(rangemV),
-     elapsedus(0)
+     rangemV(rangemV)
 {
+}
+
+int Capture::init(){
     data = (unsigned*)calloc(samples+2, sizeof(unsigned)); // two extra reads: 0 and a non-zero
+    if (!data){
+        samples = 0;
+    }
+    return data != 0;
 }
 
 /*

@@ -21,6 +21,13 @@
 #define ADC_PRESCALER        7 // 2 - 7
 #define ADC_BITS 10
 
-void setupADC(byte prescaler);
+class AVR_ADC {
+public:
+    byte prescaler;
+    byte input;
+    AVR_ADC(byte input);
+    void setPrescaler(byte prescaler);
+    unsigned long getClock();
+};
 
 #endif /* ADC_H_ */

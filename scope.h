@@ -11,6 +11,8 @@
 #include "display.h"
 #include "capture.h"
 
+// Maximum number of horizontal grid lines
+#define MAX_X_GRID_LINES 10
 // range of ADC input in Volts
 #define VOLTS_RANGE 5
 // I picked 10 so the blue/yellow cutoff falls at 3.45V on the split-color display

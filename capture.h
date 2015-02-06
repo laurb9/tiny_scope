@@ -15,6 +15,7 @@ public:
     unsigned *data;
 
     Capture(byte adc_pin, byte samples, unsigned rangemV);
+    int init();
     void capture();
     void tomV();
 };
