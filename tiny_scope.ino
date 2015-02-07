@@ -2,6 +2,7 @@
  * Tiny Scope for Arduino
  * (C)2015 Laurentiu Badea
  */
+#include <Arduino.h>
 #if 0
 #include <SPI.h>
 #include <Wire.h>
@@ -52,9 +53,17 @@ void setup(){
         display.print(F("Out of memory!"));
     }
     display.display();
-    // set up PWM outputs for testing
-    analogWrite(9, 64); // 500Hz 0.5ms pulse,  2ms period
-    analogWrite(5, 64); // 1KHz  0.25ms pulse, 1ms period
+    /* 
+     * set up PWM outputs for testing: 
+     * Read http://playground.arduino.cc/Code/PwmFrequency on influence on millis(), delay() etc
+     * short: we should really only change 9 or 10 base freq
+     * pins 3, 9, 10, and 11: base 31250Hz / 64 = 488Hz
+     * pins 5, 6: base 62500 Hz / 64 = 976Hz
+     */
+    pinMode(9, OUTPUT);
+    pinMode(5, OUTPUT);
+    analogWrite(9, 64); // 488Hz 0.512ms pulse, 2.05ms period
+    analogWrite(5, 64); // 976Hz 0.255ms pulse, 1.02ms period
 }
 
 void loop(){
