@@ -1,11 +1,13 @@
 /*
  * Tiny Scope for Arduino
  * (C)2015 Laurentiu Badea
+ *
+ * Data capture using an ADC object
  */
 #include "capture.h"
 
-Capture::Capture(byte adc_pin, byte samples, unsigned rangemV)
-    :adc_pin(adc_pin),
+Capture::Capture(AVR_ADC adc, byte samples, unsigned rangemV)
+    :adc(adc),
      samples(samples),
      rangemV(rangemV)
 {
@@ -35,14 +37,14 @@ void Capture::capture(){
      * Attempt to latch on a zero transition
      */
     for (byte j=samples; j; j--){
-        v = analogRead(adc_pin);
+        v = adc.read();
         if (v==0){
             dataCur++;
             break;
         }
     }
     for (byte j=samples; j; j--){
-        v = analogRead(adc_pin);
+        v = adc.read();
         if (v>0){
             *dataCur++ = v;
             break;
@@ -50,7 +52,7 @@ void Capture::capture(){
     }
     start = micros();
     for (; i; i--){
-        *dataCur++ = analogRead(adc_pin);
+        *dataCur++ = adc.read();
     }
     elapsedus = micros() - start;
 }
@@ -63,7 +65,7 @@ void Capture::tomV(){
     minmV = rangemV;
     maxmV = 0;
     for (int i=0; i<samples; i++){
-        v = (data[i]+1) * long(rangemV) / (1L<<ADC_BITS);
+        v = (data[i]+1) * long(rangemV) / (1L<<adc.resolution);
         data[i] = v;
         if (v < minmV){
             minmV = v;

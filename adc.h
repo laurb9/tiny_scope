@@ -33,6 +33,10 @@ public:
     unsigned long setMode(byte mode); // set sampling rate from the available values
     unsigned long getClock();       // Hz for information purposes only
     unsigned long getSampleRate();  // Hz for information purposes only
+
+    __inline__ unsigned read(){
+        return analogRead(input);
+    }
 };
 
 #endif /* ADC_H_ */

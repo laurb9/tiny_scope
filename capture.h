@@ -8,13 +8,13 @@
 
 class Capture {
 public:
-    int adc_pin;
+    AVR_ADC adc;
     byte samples;
     unsigned minmV, maxmV, rangemV;
     unsigned long elapsedus;
     unsigned *data;
 
-    Capture(byte adc_pin, byte samples, unsigned rangemV);
+    Capture(AVR_ADC adc, byte samples, unsigned rangemV);
     int init();
     void capture();
     void tomV();

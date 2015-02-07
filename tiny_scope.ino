@@ -19,7 +19,7 @@ AVR_ADC adc = AVR_ADC(ADC_PIN);
 #define DISPLAY_I2C_ADDRESS 0x3C
 extern Display display;
 
-Capture capture = Capture(adc.input, SCREEN_WIDTH, VOLTS_RANGE * 1000);
+Capture capture = Capture(adc, SCREEN_WIDTH, VOLTS_RANGE * 1000);
 
 /*
  * Display splash screen
