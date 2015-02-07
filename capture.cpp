@@ -7,9 +7,9 @@
 #include "capture.h"
 
 Capture::Capture(AVR_ADC adc, byte samples, unsigned rangemV)
-    :adc(adc),
-     samples(samples),
-     rangemV(rangemV)
+:adc(adc),
+ samples(samples),
+ rangemV(rangemV)
 {
 }
 

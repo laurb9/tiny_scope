@@ -25,36 +25,36 @@ Capture capture = Capture(adc, SCREEN_WIDTH, VOLTS_RANGE * 1000);
  * Display splash screen
  */
 void displaySplash(){
-  display.clearDisplay();
-  display.setTextColor(WHITE);
-  
-  display.setTextSize(2);
-  display.print(F("Tiny Scope"));
+    display.clearDisplay();
+    display.setTextColor(WHITE);
 
-  display.setTextSize(1);
-  display.printf(F("\nINPUT A%d\n\n"), adc.input);
-  display.print(F("ADC CLOCK "));
-  display.printLargeUnits(adc.getClock(), "Hz\n");
-  display.print(F("Sample Rate "));
-  display.printLargeUnits(adc.getSampleRate(), "Hz\n");
-  
-  display.display();
-  delay(4000);
+    display.setTextSize(2);
+    display.print(F("Tiny Scope"));
+
+    display.setTextSize(1);
+    display.printf(F("\nINPUT A%d\n\n"), adc.input);
+    display.print(F("ADC CLOCK "));
+    display.printLargeUnits(adc.getClock(), "Hz\n");
+    display.print(F("Sample Rate "));
+    display.printLargeUnits(adc.getSampleRate(), "Hz\n");
+
+    display.display();
+    delay(4000);
 }
 
 void setup(){
-  display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
-  adc.setMode(0);
-  displaySplash();
-  if (capture.init()){
-      display.print(F("Reading A/D data..."));
-  } else {
-      display.print(F("Out of memory!"));
-  }
-  display.display();
-  // set up PWM outputs for testing
-  analogWrite(9, 64); // 500Hz 0.5ms pulse,  2ms period
-  analogWrite(5, 64); // 1KHz  0.25ms pulse, 1ms period
+    display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
+    adc.setMode(0);
+    displaySplash();
+    if (capture.init()){
+        display.print(F("Reading A/D data..."));
+    } else {
+        display.print(F("Out of memory!"));
+    }
+    display.display();
+    // set up PWM outputs for testing
+    analogWrite(9, 64); // 500Hz 0.5ms pulse,  2ms period
+    analogWrite(5, 64); // 1KHz  0.25ms pulse, 1ms period
 }
 
 void loop(){
@@ -64,12 +64,12 @@ void loop(){
         delay(10000);
         return;
     }
-    
+
     capture.capture();
     capture.tomV();
-  
+
     display.clearDisplay();
-    // Enable voltmeter mode at low frequency
+    // Enable voltmeter mode at < 10KHz
     if (adc.getSampleRate() < 10000 && scope.isFlatLine(capture)){
         scope.displayVoltMeter(capture);
     } else {

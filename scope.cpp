@@ -12,10 +12,10 @@
 Display display(OLED_RESET);
 
 Scope::Scope(Display display)
-    :display(display),
-     gridX(10),
-     gridY(PIXELS_PER_VOLT),
-     timeBase(0)
+:display(display),
+ gridX(10),
+ gridY(PIXELS_PER_VOLT),
+ timeBase(0)
 {};
 
 // Since we round the timebase, it means the grid pixel size must be off.
