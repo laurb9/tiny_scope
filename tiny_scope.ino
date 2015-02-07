@@ -34,7 +34,7 @@ void displaySplash(){
   display.setTextSize(1);
   display.printf(F("\nINPUT A%d\n\n"), adc.input);
   display.printf(F("ADC CLOCK %lu KHz\n"), adc.getClock());
-  display.printf(F("PRESCALER 1:%d\n"), 1<<adc.prescaler);
+  display.printf(F("Sample Rate %lu KHz\n"), adc.getSampleRate());
   
   display.display();
   delay(4000);
@@ -42,7 +42,7 @@ void displaySplash(){
 
 void setup(){
   display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
-  adc.setPrescaler(ADC_PRESCALER);
+  adc.setMode(0);
   displaySplash();
   if (capture.init()){
       display.print(F("Reading A/D data..."));
@@ -67,7 +67,8 @@ void loop(){
     capture.tomV();
   
     display.clearDisplay();
-    if (adc.prescaler >= 6 && scope.isFlatLine(capture)){
+    // Enable voltmeter mode at low frequency
+    if (adc.getSampleRate() < 10000 && scope.isFlatLine(capture)){
         scope.displayVoltMeter(capture);
     } else {
         scope.displayScope(capture);

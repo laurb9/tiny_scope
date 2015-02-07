@@ -5,29 +5,34 @@
  * NOTE: this will only work on AVR
  */
 /*
- * ADC prescaler info (CPU clock / 2^inverse_prescaler) (both 0 and 1 are 1:2 prescalers)
- * 7 (default): normal ADC, ~18Khz normal precision.
- * Faster modes reduce accuracy.
- * 1 ~250Khz, 2 ~200Khz, 3 ~143Khz, 4 ~100Khz, 5 ~59Khz, 6 ~33Khz
- * 4 is a 1:16 prescaler, at 16Mhz this reaches max ADC clock of 1Mhz so 1-3 may not be that useful
- *
- * more info on AVRs ADC: http://maxembedded.com/2011/06/the-adc-of-the-avr/
- * http://www.atmel.com/Images/doc2559.pdf
  */
 #ifndef ADC_H_
 #define ADC_H_
 #include <Arduino.h>
 
-#define ADC_PRESCALER        7 // 2 - 7
 #define ADC_BITS 10
 
+// defines for setting and clearing register bits
+#ifndef cbi
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+#ifndef sbi
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#endif
+
 class AVR_ADC {
+protected:
+    byte cur_mode;
+    void setPrescaler(byte mode);
 public:
-    byte prescaler;
-    byte input;
+    static byte prescalers[];
+    byte input;                           // analog input port
+    byte resolution;                      // ADC resolution in bits
     AVR_ADC(byte input);
-    void setPrescaler(byte prescaler);
-    unsigned long getClock();
+    byte getModeCount();          // returns the number of available rates
+    unsigned long setMode(byte mode); // set sampling rate from the available values
+    unsigned long getClock();       // Hz for information purposes only
+    unsigned long getSampleRate();  // Hz for information purposes only
 };
 
 #endif /* ADC_H_ */
