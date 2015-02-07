@@ -60,10 +60,10 @@ unsigned long AVR_ADC::setMode(byte mode){
 
 
 /*
- * Return ADC clock in KHz. This is only useful to estimate sampling rate.
+ * Return ADC clock in Hz. This is only useful to estimate sampling rate.
  */
 unsigned long AVR_ADC::getClock(){
-    return F_CPU/(1<<prescalers[cur_mode])/1000;
+    return F_CPU/(1<<prescalers[cur_mode]);
 }
 
 /*

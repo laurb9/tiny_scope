@@ -24,9 +24,12 @@ public:
     Display(int8_t RST);
     void clearDisplay();
     int printf(const char *format, ...);
+    void printLargeUnits(unsigned long value, const char *unit);
+    void printSmallUnits(unsigned long value, const char *unit);
 #ifdef F // F() macro is available
     int printf(const __FlashStringHelper *format, ...);
 #endif
+
 };
 
 #endif /* DISPLAY_H_ */

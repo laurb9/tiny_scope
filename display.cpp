@@ -28,9 +28,10 @@ int Display::printf(const char *format, ...){
     va_start(ap, format);
     vsnprintf(buf, sizeof(buf), format, ap);
     va_end(ap);
-    Adafruit_SSD1306::print(buf);
+    Display::print(buf);
     return strlen(buf);
 };
+
 #ifdef F // F() macro is available
 int Display::printf(const __FlashStringHelper *format, ...){
     char buf[PRINTF_BUF];
@@ -42,7 +43,34 @@ int Display::printf(const __FlashStringHelper *format, ...){
     vsnprintf(buf, sizeof(buf), (const char *)format, ap); // for the rest of the world
 #endif
     va_end(ap);
-    Adafruit_SSD1306::print(buf);
+    Display::print(buf);
     return strlen(buf);
 };
 #endif
+
+/*
+ * Helper function to print a number with corresponding unit (M, K, etc)
+ */
+void Display::printLargeUnits(unsigned long value, const char *unit){
+    if (value >= 1000000)
+        Display::printf(F("+%lu M"), value/1000000);
+    else if (value >= 1000)
+        Display::printf(F("%lu K"), value/1000);
+    else
+        Display::printf(F("%lu "), value);
+    Display::print(unit);
+}
+
+/*
+ * Helper method to print a fractional (micros) number with units (u, m)
+ */
+void Display::printSmallUnits(unsigned long value, const char *unit){
+    if (value < 100){
+        Display::printf(F("%lu u"), value);
+    } else if (value <= 500000){
+        Display::printf(F("%lu.%02u m"), value/1000, round((value % 1000)/10));
+    } else {
+        Display::printf(F("%lu.%02u "), value/1000000, round((value % 1000000)/10000));
+    }
+    Display::print(unit);
+}

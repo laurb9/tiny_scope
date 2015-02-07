@@ -33,8 +33,10 @@ void displaySplash(){
 
   display.setTextSize(1);
   display.printf(F("\nINPUT A%d\n\n"), adc.input);
-  display.printf(F("ADC CLOCK %lu KHz\n"), adc.getClock());
-  display.printf(F("Sample Rate %lu KHz\n"), adc.getSampleRate());
+  display.print(F("ADC CLOCK "));
+  display.printLargeUnits(adc.getClock(), "Hz\n");
+  display.print(F("Sample Rate "));
+  display.printLargeUnits(adc.getSampleRate(), "Hz\n");
   
   display.display();
   delay(4000);

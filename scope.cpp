@@ -109,18 +109,9 @@ void Scope::renderStatusBar(Capture capture){
     if (timedToggle && timeBase){
         // show samples per second
         unsigned long sps = round(1000000.0 * capture.samples / capture.elapsedus);
-        if (sps >= 1000000)
-            display.print(F("+1 Msps"));
-        else if (sps >= 1000)
-            display.printf(F("%lu Ksps"), sps/1000);
-        else
-            display.printf(F("%lu sps"), sps);
+        display.printLargeUnits(sps, "sps");
     } else {
-        if (timeBase < 100){
-            display.printf(F("%u us"), timeBase);
-        } else {
-            display.printf(F("%u.%02u ms"), timeBase/1000, (timeBase % 1000)/10);
-        }
+        display.printSmallUnits(timeBase, "s");
     }
     display.setCursor(8*CHR_WIDTH+4, SCREEN_HEIGHT-CHR_HEIGHT);
     unsigned minmV = capture.minmV, maxmV = capture.maxmV;
