@@ -21,7 +21,7 @@ void Display::clearDisplay(){
 
 // from http://playground.arduino.cc/Main/Printf
 #include <stdarg.h>
-#define PRINTF_BUF 32 // define the tmp buffer size (change if desired)
+#define PRINTF_BUF 32 // everything we ever print should fit in here.
 int Display::printf(const char *format, ...){
     char buf[PRINTF_BUF];
     va_list ap;
@@ -53,7 +53,7 @@ int Display::printf(const __FlashStringHelper *format, ...){
  */
 void Display::printLargeUnits(unsigned long value, const char *unit){
     if (value >= 1000000)
-        Display::printf(F("+%lu M"), value/1000000);
+        Display::printf(F("%lu.%01u M"), value/1000000, round((value % 1000000)/100000));
     else if (value >= 1000)
         Display::printf(F("%lu K"), value/1000);
     else
