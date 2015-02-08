@@ -58,9 +58,9 @@ int Display::printf(const __FlashStringHelper *format, ...){
  */
 void Display::printLargeUnits(unsigned long value, const char *unit){
     if (value >= 1000000)
-        Display::printf(F("%lu.%01u M"), value/1000000, round((value % 1000000)/100000));
+        Display::printf(F("%lu.%01u M"), (value+50000)/1000000, ((value+50000) % 1000000)/100000);
     else if (value >= 1000)
-        Display::printf(F("%lu K"), value/1000);
+        Display::printf(F("%lu K"), (value+500)/1000);
     else
         Display::printf(F("%lu "), value);
     Display::print(unit);
@@ -73,9 +73,9 @@ void Display::printSmallUnits(unsigned long value, const char *unit){
     if (value < 100){
         Display::printf(F("%lu u"), value);
     } else if (value <= 500000){
-        Display::printf(F("%lu.%02u m"), value/1000, round((value % 1000)/10));
+        Display::printf(F("%lu.%02lu m"), (value+5)/1000, ((value+5) % 1000)/10);
     } else {
-        Display::printf(F("%lu.%02u "), value/1000000, round((value % 1000000)/10000));
+        Display::printf(F("%lu.%02lu "), (value+5000)/1000000, ((value+5000) % 1000000)/10000);
     }
     Display::print(unit);
 }

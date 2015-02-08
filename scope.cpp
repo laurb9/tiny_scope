@@ -122,8 +122,8 @@ void Scope::renderStatusBar(Capture capture){
         display.printSmallUnits(timeBase, "s");
     }
     display.setCursor(9*CHR_WIDTH, SCREEN_HEIGHT-CHR_HEIGHT);
-    unsigned minmV = capture.minmV, maxmV = capture.maxmV;
-    display.printf(F(" %d.%02d:%d.%02d V"), minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
+    unsigned minmV = capture.minmV+5, maxmV = capture.maxmV+5;
+    display.printf(F(" %u.%02u:%u.%02u V"), minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
 }
 
 /*
@@ -151,7 +151,7 @@ void Scope::displayVoltMeter(Capture capture){
     unsigned minmV = capture.minmV, maxmV = capture.maxmV;
     display.setCursor(2 * CHR_WIDTH, 2 * CHR_HEIGHT);
     display.setTextSize(3);
-    display.printf(F("%u.%02lu V"), maxmV/1000, round((maxmV%1000)/10.0));
+    display.printf(F("%u.%02u V"), (maxmV+5)/1000, ((maxmV+5)%1000)/10);
     display.setTextSize(1);
     display.setCursor(2 * CHR_WIDTH, 7 * CHR_HEIGHT);
 
