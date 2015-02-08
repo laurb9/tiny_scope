@@ -15,25 +15,20 @@
 
 // Maximum number of horizontal grid lines
 #define MAX_X_GRID_LINES 10
-// range of ADC input in Volts
-#define VOLTS_RANGE 5
-// I picked 10 so the blue/yellow cutoff falls at 3.45V on the split-color display
-#define PIXELS_PER_VOLT 10
-#define PIXELS_PER_TIME 10
-// smallest mV value that can be seen on display
-#define VISIBLE_RESOLUTION_MV (1000/PIXELS_PER_VOLT/2)
+// Maximum number of vertical grid lines
+#define MAX_Y_GRID_LINES 5
 
 class Scope {
 protected:
     Display display;
     unsigned minX, maxX;
     unsigned minY, maxY;
-    unsigned gridX, gridY; /* grid in pixels per grid unit */
-    unsigned timeBase;
-    void renderGrid();
-    void renderGraph(unsigned *data, byte samples, int logicMode);
+    unsigned timeBase;     // grid spacing in microseconds
+    unsigned mVperPixel;   // visible mV resolution on screen
+    void renderGrid(unsigned long elapsed, unsigned rangemV);
+    void renderGraph(unsigned *data, unsigned rangemV, byte samples, int logicMode);
     void renderStatusBar(Capture capture);
-    void calcTimeBase(unsigned long elapsed, byte samples);
+    unsigned long calcGridStep(unsigned long length, unsigned count);
 public:
     Scope(Display display, unsigned minX, unsigned maxX, unsigned minY, unsigned maxY);
     int isFlatLine(Capture capture);

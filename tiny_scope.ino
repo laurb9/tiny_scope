@@ -18,17 +18,39 @@
 #include "scope.h"
 #include "capture.h"
 
-// Which analog input to read
+/****************************************************************************
+ * Configurable parameters
+ */
+
+// Which analog input to read the data from.
 #define ADC_PIN 1
-// ADC mode (0-5, 0 = default). This is NOT the prescaler value, just an index in a table.
+
+// AREF (ADC reference) value in milliVolts. Default 5000mV (5V system) or 3300mV (3.3V).
+// Change this if AREF is connected to a different voltage reference
+#define AREF_MV 5000
+
+// ADC mode (0-5, 0 = default, 5 = fastest less accurate)
+// This is NOT the prescaler value, just an index in a table in adc.cpp
+// On a 16MHz UNO R3, the grid is 2ms apart while on 5 it goes down to 0.1ms
 #define ADC_MODE 0
+
+// Address of I2C OLED display. If screen looks scaled edit Adafruit_SSD1306.h
+// and pick SSD1306_128_64 or SSD1306_128_32 that matches display type.
+#define DISPLAY_I2C_ADDRESS 0x3C
+
+// Enable PWM outputs on pins 9 and 5 for testing (see setup()). Comment out to disable.
+#define ENABLE_PWM
+
+/*
+ * End Configurable parameters
+ ****************************************************************************/
+
 AVR_ADC adc = AVR_ADC(ADC_PIN);
 
-#define DISPLAY_I2C_ADDRESS 0x3C
 extern Display display;
 
-// Configure capture one sample per pixel (SCREEN_WIDTH samples), 0 to VREF=5000mV
-Capture capture = Capture(adc, SCREEN_WIDTH, VOLTS_RANGE * 1000);
+// Configure capture one sample per pixel (SCREEN_WIDTH samples)
+Capture capture = Capture(adc, SCREEN_WIDTH, AREF_MV);
 
 /*
  * Display splash screen
@@ -41,7 +63,8 @@ void displaySplash(){
     display.print(F("Tiny Scope"));
 
     display.setTextSize(1);
-    display.printf(F("\nINPUT A%d\n\n"), adc.input);
+    display.printf(F("\nINPUT A%d  VREF "), adc.input);
+    display.printSmallUnits(1000L*capture.rangemV, "V\n"); // printSmallUnits expects micro[V]
     display.print(F("ADC CLOCK "));
     display.printLargeUnits(adc.getClock(), "Hz\n");
     display.print(F("Sample Rate "));
@@ -61,6 +84,8 @@ void setup(){
         display.print(F("Out of memory!"));
     }
     display.display();
+
+#ifdef ENABLE_PWM
     /* 
      * set up PWM outputs for testing: 
      * Read http://playground.arduino.cc/Code/PwmFrequency on influence on millis(), delay() etc
@@ -72,12 +97,14 @@ void setup(){
     pinMode(5, OUTPUT);
     analogWrite(9, 64); // 488Hz 0.512ms pulse, 2.05ms period
     analogWrite(5, 64); // 976Hz 0.255ms pulse, 1.02ms period
+#endif
 }
 
 void loop(){
     static Scope scope = Scope(display, 0, SCREEN_WIDTH, 0, 50);
 
     if (!capture.samples){
+        // leave "Out of memory" printed by setup() onscreen.
         delay(10000);
         return;
     }
