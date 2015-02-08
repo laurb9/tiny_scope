@@ -24,14 +24,16 @@
 class Scope {
 protected:
     Display display;
-    unsigned gridX, gridY; /* grid density */
+    unsigned minX, maxX;
+    unsigned minY, maxY;
+    unsigned gridX, gridY; /* grid in pixels per grid unit */
     unsigned timeBase;
     void renderGrid();
-    void renderGraph(unsigned *data, int logicMode);
+    void renderGraph(unsigned *data, byte samples, int logicMode);
     void renderStatusBar(Capture capture);
     void calcTimeBase(unsigned long elapsed, byte samples);
 public:
-    Scope(Display display);
+    Scope(Display display, unsigned minX, unsigned maxX, unsigned minY, unsigned maxY);
     int isFlatLine(Capture capture);
     int getLogicMode(Capture capture);
     void displayScope(Capture capture);

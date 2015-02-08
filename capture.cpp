@@ -65,7 +65,7 @@ void Capture::tomV(){
     minmV = rangemV;
     maxmV = 0;
     for (int i=0; i<samples; i++){
-        v = (data[i]+1) * long(rangemV) / (1L<<adc.resolution);
+        v = map(data[i], 0, (1L<<adc.bits)-1, 0, long(rangemV));
         data[i] = v;
         if (v < minmV){
             minmV = v;

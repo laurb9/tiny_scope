@@ -10,7 +10,9 @@
 #define ADC_H_
 #include <Arduino.h>
 
+#ifdef __AVR__
 #define ADC_BITS 10
+#endif /* __AVR__ */
 
 // defines for setting and clearing register bits
 #ifndef cbi
@@ -27,7 +29,7 @@ protected:
 public:
     static byte prescalers[];
     byte input;                           // analog input port
-    byte resolution;                      // ADC resolution in bits
+    byte bits;                            // ADC resolution in bits
     AVR_ADC(byte input);
     byte getModeCount();          // returns the number of available rates
     unsigned long setMode(byte mode); // set sampling rate from the available values

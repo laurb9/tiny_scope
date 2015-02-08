@@ -11,8 +11,12 @@
 #define OLED_RESET 4
 Display display(OLED_RESET);
 
-Scope::Scope(Display display)
+Scope::Scope(Display display, unsigned minX, unsigned maxX, unsigned minY, unsigned maxY)
 :display(display),
+ minX(minX),
+ maxX(maxX),
+ minY(maxY), /* reverse min/max Y because screen coordinates are upside-down */
+ maxY(minY),
  gridX(10),
  gridY(PIXELS_PER_VOLT),
  timeBase(0)
@@ -23,7 +27,7 @@ Scope::Scope(Display display)
 // More than about 4 will cause the grid to shift around at high sampling rates
 #define GRID_X_EXTRA_BITS 3
 /*
- * Calculate nearest round timeBase to fit the grid
+ * Calculate nearest round timeBase(us) to fit the grid
  */
 void Scope::calcTimeBase(unsigned long elapsed, byte samples){
     // TODO: maybe do this smarter (log to pick scale) ?
@@ -37,6 +41,7 @@ void Scope::calcTimeBase(unsigned long elapsed, byte samples){
             }
         }
     }
+    // calculate number of samples per grid unit
     gridX = ((long(timeBase) * samples) << GRID_X_EXTRA_BITS) / elapsed;
 }
 
@@ -44,9 +49,9 @@ void Scope::calcTimeBase(unsigned long elapsed, byte samples){
  * Render graph grid with square units
  */
 void Scope::renderGrid(){
-    for (unsigned x=0; x<SCREEN_WIDTH << GRID_X_EXTRA_BITS; x+=gridX){
+    for (unsigned x=minX << GRID_X_EXTRA_BITS; x<maxX << GRID_X_EXTRA_BITS; x+=gridX){
         for (unsigned y=0; y<=VOLTS_RANGE; y++){
-            display.drawPixel(x >> GRID_X_EXTRA_BITS, y*gridY, WHITE);
+            display.drawPixel(x >> GRID_X_EXTRA_BITS, map(y, 0, VOLTS_RANGE, minY, maxY), WHITE);
         }
     }
 }
@@ -81,19 +86,20 @@ int Scope::getLogicMode(Capture capture){
  * Draw the mV values on the graph
  * The screen is inverted so Y=0 corresponds to 5V
  */
-void Scope::renderGraph(unsigned *data, int logicMode){
-    int x, y, lastY;
+void Scope::renderGraph(unsigned *data, byte samples, int logicMode){
+    int i, x, y, lastY;
 
     // render data graph
-    for (x=0; x<SCREEN_WIDTH; x++, data++){
-        y = VOLTS_RANGE * gridY - round((*data)*gridY/1000);
-        if (logicMode && x>0 && abs(lastY-y)>4){
+    for (i=0; i<samples; i++, data++){
+        x = map(i, 0, samples, minX, maxX);
+        y = map(*data, 0, VOLTS_RANGE*1000, minY, maxY);
+        if (logicMode && i>0 && abs(lastY-y)>4){
             if (y-lastY>0){
                 display.drawFastVLine(x-1,lastY,y-lastY+1,WHITE);
             } else {
                 display.drawFastVLine(x-1,y,lastY-y+1,WHITE);
             }
-        }
+        };
         lastY=y;
         display.drawPixel(x, y, WHITE);
     }
@@ -113,7 +119,7 @@ void Scope::renderStatusBar(Capture capture){
     } else {
         display.printSmallUnits(timeBase, "s");
     }
-    display.setCursor(8*CHR_WIDTH+4, SCREEN_HEIGHT-CHR_HEIGHT);
+    display.setCursor(9*CHR_WIDTH, SCREEN_HEIGHT-CHR_HEIGHT);
     unsigned minmV = capture.minmV, maxmV = capture.maxmV;
     display.printf(F(" %d.%02d:%d.%02d V"), minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
 }
@@ -132,7 +138,7 @@ void Scope::displayScope(Capture capture){
     display.setCursor(0,0);
     Scope::calcTimeBase(capture.elapsedus, capture.samples);
     Scope::renderGrid();
-    Scope::renderGraph(capture.data, Scope::getLogicMode(capture));
+    Scope::renderGraph(capture.data, capture.samples, Scope::getLogicMode(capture));
     Scope::renderStatusBar(capture);
 }
 

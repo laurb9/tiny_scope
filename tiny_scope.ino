@@ -67,7 +67,7 @@ void setup(){
 }
 
 void loop(){
-    static Scope scope = Scope(display);
+    static Scope scope = Scope(display, 0, SCREEN_WIDTH, 0, 50);
 
     if (!capture.samples){
         delay(10000);

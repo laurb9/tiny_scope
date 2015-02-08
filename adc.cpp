@@ -21,7 +21,7 @@
 AVR_ADC::AVR_ADC(byte input)
 :cur_mode(0),
  input(input),
- resolution(ADC_BITS)
+ bits(ADC_BITS)
 {
     pinMode(input, INPUT);
 }
