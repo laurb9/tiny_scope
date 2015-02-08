@@ -1,10 +1,12 @@
 /*
- * setup high frequency DAC
- * (C)2015 Laurentiu Badea
+ * adc.h - Interface to configure ADC speed and capture data.
+ *
+ * Copyright (C)2015 Laurentiu Badea
+ *
+ * This file may be redistributed under the terms of the MIT license.
+ * A copy of this license has been included with this distribution in the file LICENSE.
+ *
  * http://forum.arduino.cc/index.php/topic,6549.0.html
- * NOTE: this will only work on AVR
- */
-/*
  */
 #ifndef ADC_H_
 #define ADC_H_

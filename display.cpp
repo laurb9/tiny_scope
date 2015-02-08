@@ -1,6 +1,11 @@
 /*
- * Tiny Scope for Arduino
- * (C)2015 Laurentiu Badea
+ * display.cpp - Display class with printf() and human-readable units
+ * Tiny Scope for Arduino project
+ *
+ * Copyright (C)2015 Laurentiu Badea
+ *
+ * This file may be redistributed under the terms of the MIT license.
+ * A copy of this license has been included with this distribution in the file LICENSE.
  */
 #include "display.h"
 

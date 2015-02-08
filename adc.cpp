@@ -1,13 +1,19 @@
 /*
- * (C)2015 Laurentiu Badea
+ * adc.cpp - Interface to configure ADC speed and capture data.
+ * Tiny Scope for Arduino project
  *
- * Configure ADC clock
- * NOTE: this will only work on AVR
+ * Copyright (C)2015 Laurentiu Badea
  *
- * ADC prescaler info (CPU clock / 2^inverse_prescaler) (both 0 and 1 are 1:2 prescalers)
- * 7 (default): normal ADC, ~18Khz normal precision.
- * Faster modes reduce accuracy. Up to 1Mhz clock precision is maintained.
- * 1 ~250Khz, 2 ~200Khz, 3 ~143Khz, 4 ~100Khz, 5 ~59Khz, 6 ~33Khz
+ * This file may be redistributed under the terms of the MIT license.
+ * A copy of this license has been included with this distribution in the file LICENSE.
+ *
+ * NOTE: this will only work on AVR and was only tested on Atmega328.
+ *
+ * ADC prescaler info (CPU clock / 2^prescaler) (both 0 and 1 are 1:2 prescalers)
+ * 7 is default mode, 9KHz sampling rate
+ * Faster modes reduce accuracy. Up to 1Mhz clock accuracy is reasonably maintained.
+ * ADC Clock@16MHz AVR: 1 8MHz,    2 4MHz,    3 2MHz,    4 1MHz,   5 512KHz, 6 256KHz, 7 128Khz
+ * Sampling @16MHz AVR: 1 ~615KHz, 2 ~307KHz, 3 ~153KHz, 4 ~76Khz, 5 ~38KHz, 6 ~19KHz, 7 ~9KHz
  * 4 is a 1:16 prescaler, at 16Mhz this reaches max ADC clock of 1Mhz so 1-3 may not be that useful
  *
  * more info on AVRs ADC:
@@ -25,7 +31,7 @@ AVR_ADC::AVR_ADC(byte input)
 {
     pinMode(input, INPUT);
 }
-byte AVR_ADC::prescalers[6] = {7,6,5,4,3,2};
+byte AVR_ADC::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
 
 /*
  * Get the number of

@@ -1,6 +1,11 @@
 /*
- * Tiny Scope for Arduino
- * (C)2015 Laurentiu Badea
+ * tiny_scope.ino - main application
+ * Tiny Scope for Arduino project
+ *
+ * Copyright (C)2015 Laurentiu Badea
+ *
+ * This file may be redistributed under the terms of the MIT license.
+ * A copy of this license has been included with this distribution in the file LICENSE.
  */
 #include <Arduino.h>
 #if 0
@@ -15,11 +20,14 @@
 
 // Which analog input to read
 #define ADC_PIN 1
+// ADC mode (0-5, 0 = default). This is NOT the prescaler value, just an index in a table.
+#define ADC_MODE 0
 AVR_ADC adc = AVR_ADC(ADC_PIN);
 
 #define DISPLAY_I2C_ADDRESS 0x3C
 extern Display display;
 
+// Configure capture one sample per pixel (SCREEN_WIDTH samples), 0 to VREF=5000mV
 Capture capture = Capture(adc, SCREEN_WIDTH, VOLTS_RANGE * 1000);
 
 /*
@@ -45,7 +53,7 @@ void displaySplash(){
 
 void setup(){
     display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
-    adc.setMode(0);
+    adc.setMode(ADC_MODE);
     displaySplash();
     if (capture.init()){
         display.print(F("Reading A/D data..."));
@@ -78,7 +86,7 @@ void loop(){
     capture.tomV();
 
     display.clearDisplay();
-    // Enable voltmeter mode at < 10KHz
+    // Enable voltmeter mode at low sampling speed (< 10KHz)
     if (adc.getSampleRate() < 10000 && scope.isFlatLine(capture)){
         scope.displayVoltMeter(capture);
     } else {
@@ -86,5 +94,6 @@ void loop(){
     }
     display.display();
 
+    // displaying at around 10fps is probably sufficient
     delay(100);
 }
