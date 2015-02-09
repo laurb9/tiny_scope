@@ -113,7 +113,7 @@ void Scope::renderGraph(unsigned *data, unsigned rangemV, byte samples, int logi
  * Display time units, volt range etc
  */
 void Scope::renderStatusBar(Capture capture){
-    display.setCursor(0, SCREEN_HEIGHT-CHR_HEIGHT);
+    display.setTextCursor(7, 0);
     int timedToggle = (millis() >> 12) & 1; // bounces between 0 and 1 slowly
 
     if (!timedToggle && timeBase){
@@ -123,7 +123,7 @@ void Scope::renderStatusBar(Capture capture){
     } else {
         display.printSmallUnits(timeBase, "s");
     }
-    display.setCursor(9*CHR_WIDTH, SCREEN_HEIGHT-CHR_HEIGHT);
+    display.setTextCursor(7, 9);
     unsigned minmV = capture.minmV+5, maxmV = capture.maxmV+5;
     display.printf(F(" %u.%02u:%u.%02u V"), minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
 }
@@ -149,15 +149,15 @@ void Scope::displayScope(Capture capture){
  */
 void Scope::displayVoltMeter(Capture capture){
     unsigned minmV = capture.minmV, maxmV = capture.maxmV;
-    display.setCursor(2 * CHR_WIDTH, 2 * CHR_HEIGHT);
+    display.setTextCursor(2, 2);
     display.setTextSize(3);
     display.printf(F("%u.%02u V"), (maxmV+5)/1000, ((maxmV+5)%1000)/10);
     display.setTextSize(1);
-    display.setCursor(2 * CHR_WIDTH, 7 * CHR_HEIGHT);
+    display.setTextCursor(7, 2);
 
     unsigned diff = maxmV - minmV;
     display.printf(F("-%umV"), maxmV-minmV);
-    display.setCursor(16 * CHR_WIDTH, 7 * CHR_HEIGHT);
+    display.setTextCursor(7, 16);
     // compute diff in tenths of %
     diff = diff*1000/capture.rangemV;
     display.printf(F("%u.%u%%"), diff/10, (diff%10));

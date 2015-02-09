@@ -9,6 +9,9 @@
  */
 #include "display.h"
 
+#define CHR_HEIGHT 8 // found in Adafruit_GFX::write(c)
+#define CHR_WIDTH 6
+
 Display::Display(int8_t SID, int8_t SCLK, int8_t DC, int8_t RST, int8_t CS)
     :Adafruit_SSD1306(SID, SCLK, DC, RST, CS)
 {};
@@ -52,6 +55,13 @@ int Display::printf(const __FlashStringHelper *format, ...){
     return strlen(buf);
 };
 #endif
+
+/*
+ * Helper function to move cursor at text positions
+ */
+void Display::setTextCursor(byte row, byte col){
+    Display::setCursor(col*CHR_WIDTH, row*CHR_HEIGHT);
+}
 
 /*
  * Helper function to print a number with corresponding unit (M, K, etc)

@@ -15,9 +15,6 @@
 #define SCREEN_WIDTH  SSD1306_LCDWIDTH
 #define SCREEN_HEIGHT SSD1306_LCDHEIGHT
 
-#define CHR_HEIGHT 8 // found in Adafruit_GFX::write(c)
-#define CHR_WIDTH 6
-
 /*
  * SSD1306 class with printf() functionality.
  * clearDisplay() automatically sets text cursor to 0,0
@@ -29,6 +26,7 @@ public:
     Display(int8_t RST);
     void clearDisplay();
     int printf(const char *format, ...);
+    void setTextCursor(byte row, byte col);
     void printLargeUnits(unsigned long value, const char *unit);
     void printSmallUnits(unsigned long value, const char *unit);
 #ifdef F // F() macro is available
