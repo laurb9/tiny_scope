@@ -12,10 +12,6 @@
 #define ADC_H_
 #include <Arduino.h>
 
-#ifdef __AVR__
-#define ADC_BITS 10
-#endif /* __AVR__ */
-
 // defines for setting and clearing register bits
 #ifndef cbi
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
@@ -24,23 +20,24 @@
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
 
-class AVR_ADC {
+
+class ADCBase {
 protected:
     byte cur_mode;
-    void setPrescaler(byte mode);
 public:
-    static byte prescalers[];
-    byte input;                           // analog input port
-    byte bits;                            // ADC resolution in bits
-    AVR_ADC(byte input);
-    byte getModeCount();          // returns the number of available rates
-    unsigned long setMode(byte mode); // set sampling rate from the available values
-    unsigned long getClock();       // Hz for information purposes only
-    unsigned long getSampleRate();  // Hz for information purposes only
-
-    __inline__ unsigned read(){
-        return analogRead(input);
-    }
+    byte input;                       // analog input port connected to this ADC
+    byte bits;                        // ADC resolution in bits
+    virtual byte getModeCount();      // returns the number of available sampling rates (>0)
+    virtual bool setMode(byte mode);  // set mode 0 - getModeCount()-1. True if successful.
+    virtual unsigned long getClock(); // return ADC clock in Hz
+    virtual unsigned long getSampleRate(); // sampling rate in Hz (actual read speed may vary)
+    virtual unsigned read();          // = analogRead(input)
 };
+
+#ifdef __MK20DX256__
+#include "adc_teensy3.h"
+#elif __AVR__
+#include "adc_avr.h"
+#endif
 
 #endif /* ADC_H_ */

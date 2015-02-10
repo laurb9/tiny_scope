@@ -1,5 +1,5 @@
 /*
- * adc.cpp - Interface to configure ADC speed and capture data.
+ * adc_avr.cpp - Interface to configure ADC speed and capture data for Atmel AVR chips
  * Tiny Scope for Arduino project
  *
  * Copyright (C)2015 Laurentiu Badea
@@ -22,31 +22,32 @@
  * http://www.atmel.com/Images/doc2559.pdf
  * http://forum.arduino.cc/index.php/topic,6549.0.html
  */
+#ifdef __AVR__
 #include "adc.h"
 
-AVR_ADC::AVR_ADC(byte input)
+ADCInput::ADCInput(byte input)
 :cur_mode(0),
  input(input),
  bits(ADC_BITS)
 {
     pinMode(input, INPUT);
 }
-byte AVR_ADC::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
+byte ADCInput::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
 
 /*
  * Get the number of
  */
-byte AVR_ADC::getModeCount(){
-    return sizeof(AVR_ADC::prescalers);
+byte ADCInput::getModeCount(){
+    return sizeof(ADCInput::prescalers);
 }
 
 /*
  * Set ADC prescaler.
  * This should accept a clock or time base instead so it's not AVR specific.
  */
-void AVR_ADC::setPrescaler(byte mode){
+void ADCInput::setPrescaler(byte mode){
     // set prescaler
-    if (mode < AVR_ADC::getModeCount()){
+    if (mode < ADCInput::getModeCount()){
         cur_mode = mode;
         byte prescaler = prescalers[mode];
         prescaler & 4 ? sbi(ADCSRA,ADPS2) : cbi(ADCSRA,ADPS2);
@@ -59,22 +60,24 @@ void AVR_ADC::setPrescaler(byte mode){
 /*
  * Configure ADC for given mode.
  */
-unsigned long AVR_ADC::setMode(byte mode){
-    AVR_ADC::setPrescaler(mode);
-    return AVR_ADC::getClock();
+bool ADCInput::setMode(byte mode){
+    ADCInput::setPrescaler(mode);
+    return 1;
 }
 
 
 /*
  * Return ADC clock in Hz. This is only useful to estimate sampling rate.
  */
-unsigned long AVR_ADC::getClock(){
+unsigned long ADCInput::getClock(){
     return F_CPU/(1<<prescalers[cur_mode]);
 }
 
 /*
  * Return ADC sampling rate, if available, otherwise 0
  */
-unsigned long AVR_ADC::getSampleRate(){
-    return AVR_ADC::getClock() / 13;
+unsigned long ADCInput::getSampleRate(){
+    return ADCInput::getClock() / ADC_CLOCK_TO_SAMPLING;
 }
+
+#endif /* __AVR__ */
