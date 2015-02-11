@@ -4,6 +4,15 @@ Tiny Scope for Arduino
 Requires: <a href="http://arduino.cc/en/Main/ArduinoBoardUno">Arduino UNO R3</a>
 and <a href="http://www.adafruit.com/products/326">Monochrome 0.96" 128x64 OLED graphic display</a> (SSD1306 driver)
 
+Features
+========
+- Configurable ADC speed for sampling rates from 9KHz to 147KHz (on Atmega328P)
+- Auto grid on time base from 2ms to 0.1ms (on Atmega328P)
+- 0V trigger
+- Display minimum-maximum voltage of captured signal
+- "Logic" mode shows square waveforms properly
+- Auto voltmeter mode when input is steady
+
 The screenshots below are on a two-color display (top yellow, rest blue). For a 5V system, the dots change to yellow above 3.45V, which may be handy.
 
 Default ADC settings on the UNO watching a 490Hz PWM (pin 9). The actual read speed is about 9KHz even though sampling rate is 10KHz.
