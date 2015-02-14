@@ -75,8 +75,9 @@ void displaySplash(){
 }
 
 void setup(){
-    display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
     adc.setMode(ADC_MODE);
+    delay(100);  // give time for display to init; if display blank increase delay
+    display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
     displaySplash();
     if (capture.init()){
         display.print(F("Reading A/D data..."));
