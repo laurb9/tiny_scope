@@ -78,6 +78,7 @@ void setup(){
     adc.setMode(ADC_MODE);
     delay(100);  // give time for display to init; if display blank increase delay
     display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
+    display.setRotation(2);
     displaySplash();
     if (capture.init()){
         display.print(F("Reading A/D data..."));
@@ -102,7 +103,7 @@ void setup(){
 }
 
 void loop(){
-    static Scope scope = Scope(display, 0, SCREEN_WIDTH, 0, 50);
+    static Scope scope = Scope(display, 0, SCREEN_WIDTH, 0, 47);
 
     if (!capture.samples){
         // leave "Out of memory" printed by setup() onscreen.
