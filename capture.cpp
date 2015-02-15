@@ -45,18 +45,17 @@ void Capture::capture(){
     for (byte j=255; j; j--){
         v = adc.read();
         if (v < ADC_JITTER){
-            *dataCur = v;
+            *dataCur++ = v;
             break;
         }
     }
     for (byte j=255; j; j--){
         v = adc.read();
         if (v >= ADC_JITTER){
-            dataCur++;
             *dataCur++ = v;
             break;
         } else {
-            *dataCur = v;
+            *data = v; // overwrite a previous "0" at dataCur-1
         }
     }
     start = micros();
