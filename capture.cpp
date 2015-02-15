@@ -25,6 +25,10 @@ int Capture::init(){
 }
 
 /*
+ * ADC allowable float for zero-detection (because of unclean ground) [mV]
+ */
+#define ADC_JITTER 4
+/*
  * Capture the requested number of samples.
  * on return, data contains the raw capture data.
  */
@@ -35,22 +39,24 @@ void Capture::capture(){
     byte i = samples;
 
     dataCur = data;
-    *dataCur = 0;
     /*
      * Attempt to latch on a zero transition
      */
-    for (byte j=samples; j; j--){
+    for (byte j=255; j; j--){
         v = adc.read();
-        if (v==0){
-            dataCur++;
+        if (v < ADC_JITTER){
+            *dataCur = v;
             break;
         }
     }
-    for (byte j=samples; j; j--){
+    for (byte j=255; j; j--){
         v = adc.read();
-        if (v>0){
+        if (v >= ADC_JITTER){
+            dataCur++;
             *dataCur++ = v;
             break;
+        } else {
+            *dataCur = v;
         }
     }
     start = micros();
