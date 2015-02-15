@@ -95,7 +95,7 @@ void Scope::renderGraph(unsigned *data, unsigned rangemV, byte samples, int logi
 
     // render data graph
     for (i=0; i<samples; i++, data++){
-        x = map(i, 0, samples, minX, maxX);
+        x = map(i, 0, samples-1, minX, maxX);
         y = map(*data, 0, rangemV, minY, maxY);
         if (logicMode && i>0 && abs(lastY-y)>4){
             if (y-lastY>0){
