@@ -113,19 +113,22 @@ void Scope::renderGraph(unsigned *data, unsigned rangemV, byte samples, int logi
  * Display time units, volt range etc
  */
 void Scope::renderStatusBar(Capture capture){
-    display.setTextCursor(7, 0);
     int timedToggle = (millis() >> 12) & 1; // bounces between 0 and 1 slowly
 
-    if (!timedToggle && timeBase){
-        // show samples per second
-        unsigned long sps = round(1000000.0 * capture.samples / capture.elapsedus);
-        display.printLargeUnits(sps, "sps");
+    display.setTextCursor(7, 0);
+    if (timedToggle){
+        display.printSmallUnits(timeBase, "s/div");
+        unsigned mVpp = capture.maxmV-capture.minmV+5;
+        display.printf(F("  %u.%02u Vpp"), mVpp/1000, (mVpp%1000)/10);
     } else {
-        display.printSmallUnits(timeBase, "s");
+        if (capture.elapsedus){
+            unsigned long sps = round(1000000.0 * capture.samples / capture.elapsedus);
+            display.printLargeUnits(sps, "sps");
+        }
+        display.setTextCursor(7, 9);
+        unsigned minmV = capture.minmV+5, maxmV = capture.maxmV+5;
+        display.printf(F(" %u.%02u:%u.%02u V"), minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
     }
-    display.setTextCursor(7, 9);
-    unsigned minmV = capture.minmV+5, maxmV = capture.maxmV+5;
-    display.printf(F(" %u.%02u:%u.%02u V"), minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
 }
 
 /*
