@@ -13,13 +13,13 @@
 
 class Capture {
 public:
-    AVR_ADC adc;
+    ADCInput adc;
     byte samples;
     unsigned minmV, maxmV, rangemV;
     unsigned long elapsedus;
     unsigned *data;
 
-    Capture(AVR_ADC adc, byte samples, unsigned rangemV);
+    Capture(ADCInput adc, byte samples, unsigned rangemV);
     int init();
     void capture();
     void tomV();

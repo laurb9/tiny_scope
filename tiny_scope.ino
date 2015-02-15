@@ -7,13 +7,13 @@
  * This file may be redistributed under the terms of the MIT license.
  * A copy of this license has been included with this distribution in the file LICENSE.
  */
-#include <Arduino.h>
-#if 0
+#if 0 /* add all necessary libs here or they will not be found on the path */
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>
 #endif
+#include <Arduino.h>
 #include "adc.h"
 #include "scope.h"
 #include "capture.h"
@@ -25,9 +25,9 @@
 // Which analog input to read the data from.
 #define ADC_PIN 1
 
-// AREF (ADC reference) value in milliVolts. Default 5000mV (5V system) or 3300mV (3.3V).
+// ADC reference voltage (mV). Default 5000 for AVR 5V, 3300 for Teensy3
 // Change this if AREF is connected to a different voltage reference
-#define AREF_MV 5000
+#define AREF_MV ADC_AREF_MV
 
 // ADC mode (0-5, 0 = default, 5 = fastest less accurate)
 // This is NOT the prescaler value, just an index in a table in adc.cpp
@@ -45,7 +45,7 @@
  * End Configurable parameters
  ****************************************************************************/
 
-AVR_ADC adc = AVR_ADC(ADC_PIN);
+ADCInput adc = ADCInput(ADC_PIN);
 
 extern Display display;
 
@@ -63,7 +63,7 @@ void displaySplash(){
     display.print(F("Tiny Scope"));
 
     display.setTextSize(1);
-    display.printf(F("\nINPUT A%d  VREF "), adc.input);
+    display.printf(F("\nINPUT A%d, VREF "), adc.input);
     display.printSmallUnits(1000L*capture.rangemV, "V\n"); // printSmallUnits expects micro[V]
     display.print(F("ADC CLOCK "));
     display.printLargeUnits(adc.getClock(), "Hz\n");
@@ -75,8 +75,9 @@ void displaySplash(){
 }
 
 void setup(){
-    display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
     adc.setMode(ADC_MODE);
+    delay(100);  // give time for display to init; if display blank increase delay
+    display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
     displaySplash();
     if (capture.init()){
         display.print(F("Reading A/D data..."));
