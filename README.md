@@ -65,3 +65,10 @@ Parts
 - <a href="http://www.amazon.com/Yellow-Serial-128X64-Display-Arduino/dp/B00O2LLT30">0.96" OLED display</a> with SSD1306 and I2C mode (that's what I tried. SPI mode is also supported by the Adafruit library but wiring is different). <a href="http://www.adafruit.com/products/938">Many stores</a> sell these and in different colors.
 - <a href="http://arduino.cc/en/Main/Software">Arduino IDE</a>
 - type B USB cable, few jumper wires
+
+Libraries
+=========
+Either use Sketch -> Import Library or make a libraries folder and drop them in there.
+- Adafruit_SSD1306 from https://github.com/adafruit/Adafruit_SSD1306
+  - Must edit Adafruit_SSD1306.h to pick the set display type to SSD1306_128_64
+- Adafruit_GFX from https://github.com/adafruit/Adafruit-GFX-Library
