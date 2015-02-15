@@ -1,13 +1,13 @@
 Tiny Scope for Arduino
 ======================
 
-Requires: <a href="http://arduino.cc/en/Main/ArduinoBoardUno">Arduino UNO R3</a>
+Requires: <a href="http://arduino.cc/en/Main/ArduinoBoardUno">Arduino UNO R3</a> or <a href="http://www.pjrc.com/teensy/index.html">Teensy USB</a> board
 and <a href="http://www.adafruit.com/products/326">Monochrome 0.96" 128x64 OLED graphic display</a> (SSD1306 driver)
 
 Features
 ========
-- Configurable ADC speed for sampling rates from 9KHz to 147KHz (on Atmega328P)
-- Auto grid on time base from 2ms to 0.1ms (on Atmega328P)
+- Configurable ADC speed for sampling rates from 9KHz to 147KHz (on UNO)
+- Auto grid on time base from 2ms to 0.1ms (on UNO)
 - 0V trigger
 - Display minimum-maximum voltage of captured signal
 - "Logic" mode shows square waveforms properly
@@ -38,27 +38,30 @@ Voltmeter mode is automatically switched on with a steady voltage signal (when i
 
 Connections
 ===========
-- OLED VCC   - UNO 3.3V
-- OLED GND   - UNO GND
-- OLED SCL   - UNO A5 or SCL
-- OLED SDA   - UNO A4 or SDA
-- PROBE WIRE - UNO A1 (defined in tiny_scope.ino)
+- OLED VCC   - 3.3V
+- OLED GND   - GND
+- OLED SCL   - A5 or SCL (Teensy SCL0 pin 19)
+- OLED SDA   - A4 or SDA (Teensy SDA0 pin 18)
+- PROBE WIRE - A1 (defined in tiny_scope.ino) (Teensy pin 15)
 
 Testing
 =======
 - A1 to 5V should display 5.00 V
 - A1 to GND should display 0.00 V
-- A1 to D9 should display a square wave (PWM) with >2ms period and >0.5ms pulse
+- A1 to D9 (Teensy pin 9) should display a square wave (PWM) with >2ms period and >0.5ms pulse
 - A1 to D5 should display a square wave (PWM) with >1ms period and >0.2ms pulse
 
 Entire project
 ==============
 
+UNO R3 and Teensy 3.1 (with upside-down display mode).
+
 <img src="http://www.wotevah.com/tiny_scope/images/tiny_scope_on_arduino.jpg" alt="Tiny Scope running on UNO R3" width="200">
+<img src="http://www.wotevah.com/tiny_scope/images/tiny_scope_on_teensy31.jpg" alt="Tiny Scope running on Teensy 3.1" width="200">
 
 Parts
 =====
-- <a href="https://www.sparkfun.com/products/11021">Arduino UNO R3</a> or <a href="http://www.adafruit.com/category/17?&main_page=index&cPath=17">Other Arduino board</a>
+- <a href="https://www.sparkfun.com/products/11021">Arduino UNO R3</a>, <a href="http://www.adafruit.com/category/17?&main_page=index&cPath=17">Other Arduino board</a> or <a href="http://www.pjrc.com/teensy/index.html"</a> (less expensive but much more powerful)
 - <a href="http://www.amazon.com/Yellow-Serial-128X64-Display-Arduino/dp/B00O2LLT30">0.96" OLED display</a> with SSD1306 and I2C mode (that's what I tried. SPI mode is also supported by the Adafruit library but wiring is different). <a href="http://www.adafruit.com/products/938">Many stores</a> sell these and in different colors.
 - <a href="http://arduino.cc/en/Main/Software">Arduino IDE</a>
 - type B USB cable, few jumper wires
