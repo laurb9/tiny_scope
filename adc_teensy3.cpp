@@ -27,7 +27,7 @@ bool ADCInput::init(uint8_t newInput, uint8_t mode)
  * Get the number of
  */
 uint8_t ADCInput::getModeCount(){
-    return sizeof(averagingTable);
+    return sizeof(averagingTable)/sizeof(*averagingTable);
 }
 
 /*
