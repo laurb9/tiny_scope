@@ -21,16 +21,16 @@
 class Scope {
 protected:
     Display display;
-    unsigned minX, maxX;
-    unsigned minY, maxY;
-    unsigned timeBase;     // grid spacing in microseconds
-    unsigned mVperPixel;   // visible mV resolution on screen
-    void renderGrid(unsigned long elapsed, unsigned rangemV);
-    void renderGraph(unsigned *data, unsigned rangemV, byte samples, int logicMode);
+    uint16_t minX, maxX;
+    uint16_t minY, maxY;
+    uint16_t timeBase;     // grid spacing in microseconds
+    uint16_t mVperPixel;   // visible mV resolution on screen
+    void renderGrid(uint32_t elapsed, uint16_t rangemV);
+    void renderGraph(uint16_t *data, uint16_t rangemV, unsigned samples, int logicMode);
     void renderStatusBar(Capture capture);
-    unsigned long calcGridStep(unsigned long length, unsigned count);
+    uint32_t calcGridStep(uint32_t length, uint16_t count);
 public:
-    Scope(Display display, unsigned minX, unsigned maxX, unsigned minY, unsigned maxY);
+    Scope(Display display, uint16_t minX, uint16_t maxX, uint16_t minY, uint16_t maxY);
     int isFlatLine(Capture capture);
     int getLogicMode(Capture capture);
     void displayScope(Capture capture);

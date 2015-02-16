@@ -18,19 +18,19 @@
 
 class ADCInput : public ADCBase {
 protected:
-    byte cur_mode;
-    void setPrescaler(byte mode);
+    uint8_t cur_mode;
+    void setPrescaler(uint8_t mode);
 public:
-    static byte prescalers[];
-    byte input;                           // analog input port
-    byte bits;                            // ADC resolution in bits
-    ADCInput(byte input);
-    byte getModeCount();          // returns the number of available rates
-    bool setMode(byte mode); // set sampling rate from the available values
-    unsigned long getClock();       // Hz for information purposes only
-    unsigned long getSampleRate();  // Hz for information purposes only
+    static uint8_t prescalers[];
+    uint8_t input;                           // analog input port
+    uint8_t bits;                            // ADC resolution in bits
+    ADCInput(uint8_t input);
+    uint8_t getModeCount();          // returns the number of available rates
+    bool setMode(uint8_t mode); // set sampling rate from the available values
+    uint32_t getClock();       // Hz for information purposes only
+    uint32_t getSampleRate();  // Hz for information purposes only
 
-    __inline__ unsigned read(){
+    __inline__ uint16_t read(){
         return analogRead(input);
     }
 };

@@ -11,7 +11,7 @@
 #ifdef __MK20DX256__
 #include "adc.h"
 
-ADCInput::ADCInput(byte input)
+ADCInput::ADCInput(uint8_t input)
 :input(input),
  bits(ADC_BITS)
 {
@@ -21,28 +21,28 @@ ADCInput::ADCInput(byte input)
 /*
  * Get the number of
  */
-byte ADCInput::getModeCount(){
+uint8_t ADCInput::getModeCount(){
     return 1;
 }
 
 /*
  * Configure ADC for given mode.
  */
-bool ADCInput::setMode(byte mode){
+bool ADCInput::setMode(uint8_t mode){
     return 1;
 }
 
 /*
  * Return ADC clock in Hz. This is only useful to estimate sampling rate.
  */
-unsigned long ADCInput::getClock(){
+uint32_t ADCInput::getClock(){
     return F_CPU/2;
 }
 
 /*
  * Return ADC sampling rate, if available, otherwise 0
  */
-unsigned long ADCInput::getSampleRate(){
+uint32_t ADCInput::getSampleRate(){
     return ADCInput::getClock() / ADC_CLOCK_TO_SAMPLING;
 }
 

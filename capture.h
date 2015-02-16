@@ -14,12 +14,12 @@
 class Capture {
 public:
     ADCInput adc;
-    byte samples;
-    unsigned minmV, maxmV, rangemV;
-    unsigned long elapsedus;
-    unsigned *data;
+    unsigned samples;
+    uint32_t elapsedus;
+    uint16_t minmV, maxmV, rangemV;
+    uint16_t *data;
 
-    Capture(ADCInput adc, byte samples, unsigned rangemV);
+    Capture(ADCInput adc, unsigned samples, uint16_t rangemV);
     int init();
     void capture();
     void tomV();

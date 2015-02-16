@@ -25,19 +25,19 @@
 #ifdef __AVR__
 #include "adc.h"
 
-ADCInput::ADCInput(byte input)
+ADCInput::ADCInput(uint8_t input)
 :cur_mode(0),
  input(input),
  bits(ADC_BITS)
 {
     pinMode(input, INPUT);
 }
-byte ADCInput::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
+uint8_t ADCInput::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
 
 /*
  * Get the number of
  */
-byte ADCInput::getModeCount(){
+uint8_t ADCInput::getModeCount(){
     return sizeof(ADCInput::prescalers);
 }
 
@@ -45,11 +45,11 @@ byte ADCInput::getModeCount(){
  * Set ADC prescaler.
  * This should accept a clock or time base instead so it's not AVR specific.
  */
-void ADCInput::setPrescaler(byte mode){
+void ADCInput::setPrescaler(uint8_t mode){
     // set prescaler
     if (mode < ADCInput::getModeCount()){
         cur_mode = mode;
-        byte prescaler = prescalers[mode];
+        uint8_t prescaler = prescalers[mode];
         prescaler & 4 ? sbi(ADCSRA,ADPS2) : cbi(ADCSRA,ADPS2);
         prescaler & 2 ? sbi(ADCSRA,ADPS1) : cbi(ADCSRA,ADPS1);
         prescaler & 1 ? sbi(ADCSRA,ADPS0) : cbi(ADCSRA,ADPS0);
@@ -60,7 +60,7 @@ void ADCInput::setPrescaler(byte mode){
 /*
  * Configure ADC for given mode.
  */
-bool ADCInput::setMode(byte mode){
+bool ADCInput::setMode(uint8_t mode){
     ADCInput::setPrescaler(mode);
     return 1;
 }
@@ -69,14 +69,14 @@ bool ADCInput::setMode(byte mode){
 /*
  * Return ADC clock in Hz. This is only useful to estimate sampling rate.
  */
-unsigned long ADCInput::getClock(){
+uint32_t ADCInput::getClock(){
     return F_CPU/(1<<prescalers[cur_mode]);
 }
 
 /*
  * Return ADC sampling rate, if available, otherwise 0
  */
-unsigned long ADCInput::getSampleRate(){
+uint32_t ADCInput::getSampleRate(){
     return ADCInput::getClock() / ADC_CLOCK_TO_SAMPLING;
 }
 
