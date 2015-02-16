@@ -26,9 +26,9 @@ public:
     Display(int8_t RST);
     void clearDisplay();
     int printf(const char *format, ...);
-    void setTextCursor(byte row, byte col);
-    void printLargeUnits(unsigned long value, const char *unit);
-    void printSmallUnits(unsigned long value, const char *unit);
+    void setTextCursor(uint8_t row, uint8_t col);
+    void printLargeUnits(uint32_t value, const char *unit);
+    void printSmallUnits(uint32_t value, const char *unit);
 #ifdef F // F() macro is available
     int printf(const __FlashStringHelper *format, ...);
 #endif

@@ -59,14 +59,14 @@ int Display::printf(const __FlashStringHelper *format, ...){
 /*
  * Helper function to move cursor at text positions
  */
-void Display::setTextCursor(byte row, byte col){
+void Display::setTextCursor(uint8_t row, uint8_t col){
     Display::setCursor(col*CHR_WIDTH, row*CHR_HEIGHT);
 }
 
 /*
  * Helper function to print a number with corresponding unit (M, K, etc)
  */
-void Display::printLargeUnits(unsigned long value, const char *unit){
+void Display::printLargeUnits(uint32_t value, const char *unit){
     if (value >= 1000000)
         Display::printf(F("%lu.%01u M"), (value+50000)/1000000, ((value+50000) % 1000000)/100000);
     else if (value >= 1000)
@@ -79,7 +79,7 @@ void Display::printLargeUnits(unsigned long value, const char *unit){
 /*
  * Helper method to print a fractional (micros) number with units (u, m)
  */
-void Display::printSmallUnits(unsigned long value, const char *unit){
+void Display::printSmallUnits(uint32_t value, const char *unit){
     if (value < 100){
         Display::printf(F("%lu u"), value);
     } else if (value <= 500000){
