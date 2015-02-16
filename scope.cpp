@@ -13,7 +13,7 @@
 #define OLED_RESET 4
 Display display(OLED_RESET);
 
-Scope::Scope(Display display, unsigned minX, unsigned maxX, unsigned minY, unsigned maxY)
+Scope::Scope(Display display, uint16_t minX, uint16_t maxX, uint16_t minY, uint16_t maxY)
 :display(display),
  minX(minX),
  maxX(maxX),
@@ -24,12 +24,12 @@ Scope::Scope(Display display, unsigned minX, unsigned maxX, unsigned minY, unsig
 /*
  * Helper method to calculate nearest round grid step to fit "count" grid lines over "length"
  */
-unsigned long Scope::calcGridStep(unsigned long length, unsigned count){
+uint32_t Scope::calcGridStep(uint32_t length, uint16_t count){
     // TODO: maybe do this smarter (log to pick scale) ?
-    static byte values[] = {10, 20, 25, 50};
-    unsigned long gridSize = 0;
-    for (unsigned long scale=1; !gridSize && scale < length/10; scale*=10){
-        for (unsigned i=0; i<sizeof(values); i++){
+    static uint8_t values[] = {10, 20, 25, 50};
+    uint32_t gridSize = 0;
+    for (uint32_t scale=1; !gridSize && scale < length/10; scale*=10){
+        for (uint16_t i=0; i<sizeof(values); i++){
             if (scale * count * values[i] >= length){
                 gridSize = values[i] * scale;
                 break;
@@ -42,7 +42,7 @@ unsigned long Scope::calcGridStep(unsigned long length, unsigned count){
 /*
  * Render graph grid with square units
  */
-void Scope::renderGrid(unsigned long elapsed, unsigned rangemV){
+void Scope::renderGrid(uint32_t elapsed, uint16_t rangemV){
     // Since we round the measurement units, it means the grid pixel size must be off.
     // Use a multiplier to increase its precision so we don't have to use float.
     // More than about 16 will cause the grid to shift around at high sampling rates
@@ -50,12 +50,12 @@ void Scope::renderGrid(unsigned long elapsed, unsigned rangemV){
 
     // calculate grid step in pixels
     timeBase = Scope::calcGridStep(elapsed, MAX_X_GRID_LINES);
-    unsigned gridX = ((long(timeBase) * (maxX-minX)) * PREC_MULT) / elapsed;
-    unsigned gridY = Scope::calcGridStep(rangemV, MAX_Y_GRID_LINES);
+    uint16_t gridX = ((long(timeBase) * (maxX-minX)) * PREC_MULT) / elapsed;
+    uint16_t gridY = Scope::calcGridStep(rangemV, MAX_Y_GRID_LINES);
     mVperPixel = rangemV / ((maxY>minY) ? maxY-minY : minY-maxY);
 
-    for (unsigned x=minX * PREC_MULT; x<maxX * PREC_MULT; x+=gridX){
-        for (unsigned y=0; y<=rangemV; y+=gridY){
+    for (uint16_t x=minX * PREC_MULT; x<maxX * PREC_MULT; x+=gridX){
+        for (uint16_t y=0; y<=rangemV; y+=gridY){
             display.drawPixel(x / PREC_MULT, map(y, 0, rangemV, minY, maxY), WHITE);
         }
     }
@@ -67,16 +67,16 @@ void Scope::renderGrid(unsigned long elapsed, unsigned rangemV){
  * 1: enable, 0: disable
  */
 int Scope::getLogicMode(Capture capture){
-    unsigned *data = capture.data;
-    int x, y, lastY = *data;
+    uint16_t *data = capture.data;
+    uint16_t x, y, lastY = *data;
 
     // TODO: turn on logicMode if most of the values are near minmV and maxmV
 
     // turn off logicMode if the display would be too cluttered with vertical lines
-    int transitionsUp = 0, transitionsDown = 0;
+    unsigned transitionsUp = 0, transitionsDown = 0;
     for (x=1; x<capture.samples; x++, data++){
         y = *data;
-        unsigned diff = (y > lastY) ? y-lastY : lastY-y;
+        uint16_t diff = (y > lastY) ? y-lastY : lastY-y;
         if (diff > 2*mVperPixel){
             if (y > lastY) transitionsUp++;
             else transitionsDown++;
@@ -90,8 +90,8 @@ int Scope::getLogicMode(Capture capture){
  * Draw the mV values on the graph
  * The screen is inverted so Y=0 corresponds to 5V
  */
-void Scope::renderGraph(unsigned *data, unsigned rangemV, byte samples, int logicMode){
-    int i, x, y, lastY;
+void Scope::renderGraph(uint16_t *data, uint16_t rangemV, unsigned samples, int logicMode){
+    uint16_t i, x, y, lastY = 0;
 
     // render data graph
     for (i=0; i<samples; i++, data++){
@@ -118,15 +118,15 @@ void Scope::renderStatusBar(Capture capture){
     display.setTextCursor(7, 0);
     if (timedToggle){
         display.printSmallUnits(timeBase, "s/div");
-        unsigned mVpp = capture.maxmV-capture.minmV+5;
+        uint16_t mVpp = capture.maxmV-capture.minmV+5;
         display.printf(F("  %u.%02u Vpp"), mVpp/1000, (mVpp%1000)/10);
     } else {
         if (capture.elapsedus){
-            unsigned long sps = round(1000000.0 * capture.samples / capture.elapsedus);
+            uint32_t sps = round(1000000.0 * capture.samples / capture.elapsedus);
             display.printLargeUnits(sps, "sps");
         }
         display.setTextCursor(7, 9);
-        unsigned minmV = capture.minmV+5, maxmV = capture.maxmV+5;
+        uint16_t minmV = capture.minmV+5, maxmV = capture.maxmV+5;
         display.printf(F(" %u.%02u:%u.%02u V"), minmV/1000, (minmV%1000)/10, maxmV/1000, (maxmV%1000)/10);
     }
 }
@@ -151,14 +151,14 @@ void Scope::displayScope(Capture capture){
  * Display a large voltmeter
  */
 void Scope::displayVoltMeter(Capture capture){
-    unsigned minmV = capture.minmV, maxmV = capture.maxmV;
+    uint16_t minmV = capture.minmV, maxmV = capture.maxmV;
     display.setTextCursor(2, 2);
     display.setTextSize(3);
     display.printf(F("%u.%02u V"), (maxmV+5)/1000, ((maxmV+5)%1000)/10);
     display.setTextSize(1);
     display.setTextCursor(7, 2);
 
-    unsigned diff = maxmV - minmV;
+    uint16_t diff = maxmV - minmV;
     display.printf(F("-%umV"), maxmV-minmV);
     display.setTextCursor(7, 16);
     // compute diff in tenths of %

@@ -9,7 +9,7 @@
  */
 #include "capture.h"
 
-Capture::Capture(ADCInput adc, byte samples, unsigned rangemV)
+Capture::Capture(ADCInput adc, unsigned samples, uint16_t rangemV)
 :adc(adc),
  samples(samples),
  rangemV(rangemV)
@@ -17,7 +17,7 @@ Capture::Capture(ADCInput adc, byte samples, unsigned rangemV)
 }
 
 int Capture::init(){
-    data = (unsigned*)calloc(samples+2, sizeof(unsigned)); // two extra reads: 0 and a non-zero
+    data = (uint16_t*)calloc(samples+2, sizeof(uint16_t)); // two extra reads: 0 and a non-zero
     if (!data){
         samples = 0;
     }
@@ -33,23 +33,23 @@ int Capture::init(){
  * on return, data contains the raw capture data.
  */
 void Capture::capture(){
-    unsigned long start;
-    unsigned *dataCur;
-    unsigned v;
-    byte i = samples;
+    uint32_t start;
+    uint16_t *dataCur;
+    uint16_t v;
+    unsigned i = samples;
 
     dataCur = data;
     /*
      * Attempt to latch on a zero transition
      */
-    for (byte j=255; j; j--){
+    for (unsigned j=255; j; j--){
         v = adc.read();
         if (v < ADC_JITTER){
             *dataCur++ = v;
             break;
         }
     }
-    for (byte j=255; j; j--){
+    for (unsigned j=255; j; j--){
         v = adc.read();
         if (v >= ADC_JITTER){
             *dataCur++ = v;
@@ -69,10 +69,10 @@ void Capture::capture(){
  * Convert captured data to mV and extract min/max values
  */
 void Capture::tomV(){
-    unsigned v;
+    uint16_t v;
     minmV = rangemV;
     maxmV = 0;
-    for (int i=0; i<samples; i++){
+    for (unsigned i=0; i<samples; i++){
         v = map(data[i], 0, (1L<<adc.bits)-1, 0, long(rangemV));
         data[i] = v;
         if (v < minmV){

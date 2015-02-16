@@ -23,15 +23,15 @@
 
 class ADCBase {
 protected:
-    byte cur_mode;
+    uint8_t cur_mode;
 public:
-    byte input;                       // analog input port connected to this ADC
-    byte bits;                        // ADC resolution in bits
-    virtual byte getModeCount();      // returns the number of available sampling rates (>0)
-    virtual bool setMode(byte mode);  // set mode 0 - getModeCount()-1. True if successful.
-    virtual unsigned long getClock(); // return ADC clock in Hz
-    virtual unsigned long getSampleRate(); // sampling rate in Hz (actual read speed may vary)
-    virtual unsigned read();          // = analogRead(input)
+    uint8_t input;                       // analog input port connected to this ADC
+    uint8_t bits;                        // ADC resolution in bits
+    virtual uint8_t getModeCount();      // returns the number of available sampling rates (>0)
+    virtual bool setMode(uint8_t mode);  // set mode 0 - getModeCount()-1. True if successful.
+    virtual uint32_t getClock(); // return ADC clock in Hz
+    virtual uint32_t getSampleRate(); // sampling rate in Hz (actual read speed may vary)
+    virtual uint16_t read();          // = analogRead(input)
 };
 
 #ifdef __MK20DX256__
