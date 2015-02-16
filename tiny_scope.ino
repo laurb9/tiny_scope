@@ -45,12 +45,10 @@
  * End Configurable parameters
  ****************************************************************************/
 
-ADCInput adc = ADCInput(ADC_PIN);
 
 extern Display display;
-
-// Configure capture one sample per pixel (SCREEN_WIDTH samples)
-Capture capture = Capture(adc, SCREEN_WIDTH, AREF_MV);
+static ADCInput adc;
+static Capture capture;
 
 /*
  * Display splash screen
@@ -69,18 +67,19 @@ void displaySplash(){
     display.printLargeUnits(adc.getClock(), "Hz\n");
     display.print(F("Sample Rate "));
     display.printLargeUnits(adc.getSampleRate(), "Hz\n");
-
     display.display();
     delay(4000);
 }
 
 void setup(){
-    adc.setMode(ADC_MODE);
+    adc.init(ADC_PIN, ADC_MODE);
+    int success = capture.init(adc, SCREEN_WIDTH, AREF_MV);
     delay(100);  // give time for display to init; if display blank increase delay
     display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
     display.setRotation(2);
+    // Configure capture one sample per pixel (SCREEN_WIDTH samples)
     displaySplash();
-    if (capture.init()){
+    if (success){
         display.print(F("Reading A/D data..."));
     } else {
         display.print(F("Out of memory!"));

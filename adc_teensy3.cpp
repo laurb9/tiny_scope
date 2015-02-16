@@ -11,32 +11,45 @@
 #ifdef __MK20DX256__
 #include "adc.h"
 
-ADCInput::ADCInput(uint8_t input)
-:input(input),
- bits(ADC_BITS)
+#define ADC_CLOCK_TO_SAMPLING 15
+
+static unsigned int averagingTable[] = {32, 16,  8,  4,  0, 0};
+static unsigned int adcBits[]        = {12, 12, 10, 10, 10, 8};
+
+bool ADCInput::init(uint8_t newInput, uint8_t mode)
 {
+    input = newInput;
     pinMode(input, INPUT);
+    return setMode(mode);
 }
 
 /*
  * Get the number of
  */
 uint8_t ADCInput::getModeCount(){
-    return 1;
+    return sizeof(averagingTable);
 }
 
 /*
  * Configure ADC for given mode.
  */
-bool ADCInput::setMode(uint8_t mode){
-    return 1;
+bool ADCInput::setMode(uint8_t mode=0){
+    if (mode < ADCInput::getModeCount()){
+        cur_mode = mode;
+        bits = adcBits[cur_mode];
+        analogReadRes(bits);
+        analogReadAveraging(averagingTable[cur_mode]);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /*
  * Return ADC clock in Hz. This is only useful to estimate sampling rate.
  */
 uint32_t ADCInput::getClock(){
-    return F_CPU/2;
+    return F_CPU/8;
 }
 
 /*

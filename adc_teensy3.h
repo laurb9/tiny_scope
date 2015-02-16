@@ -10,17 +10,14 @@
  */
 #ifndef ADC_TEENSY3_
 #define ADC_TEENSY3_
-#include "adc.h"
 
-#define ADC_BITS 10
-#define ADC_CLOCK_TO_SAMPLING 15
 #define ADC_AREF_MV 3300
 
 class ADCInput : public ADCBase {
 public:
     uint8_t input;                           // analog input port
     uint8_t bits;                            // ADC resolution in bits
-    ADCInput(uint8_t input);
+    bool init(uint8_t input=0, uint8_t mode=0);
     uint8_t getModeCount();          // returns the number of available rates
     bool setMode(uint8_t mode); // set sampling rate from the available values
     uint32_t getClock();       // Hz for information purposes only

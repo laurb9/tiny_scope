@@ -19,8 +19,7 @@ public:
     uint16_t minmV, maxmV, rangemV;
     uint16_t *data;
 
-    Capture(ADCInput adc, unsigned samples, uint16_t rangemV);
-    int init();
+    int init(ADCInput adc, unsigned samples, uint16_t rangemV);
     void capture();
     void tomV();
 };
