@@ -114,14 +114,14 @@ void loop(){
     capture.tomV();
 
     display.clearDisplay();
-    // Enable voltmeter mode at low sampling speed (< 10KHz)
-    if (adc.getSampleRate() < 10000 && scope.isFlatLine(capture)){
+    // Enable voltmeter mode if line is flat
+    if (scope.isFlatLine(capture)){
         scope.displayVoltMeter(capture);
     } else {
         scope.displayScope(capture);
     }
     display.display();
 
-    // displaying at around 10fps is probably sufficient
-    delay(100);
+    // displaying at max 20fps
+    delay(50);
 }

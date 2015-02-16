@@ -133,9 +133,19 @@ void Scope::renderStatusBar(Capture capture){
 
 /*
  * Return true if rendered graph would be a flat line (resolution-dependent)
+ * Take rolling average Vpp over HISTORY_SIZE readings
  */
 int Scope::isFlatLine(Capture capture){
-    return capture.maxmV-capture.minmV < mVperPixel/2;
+#define VPP_BUF_SIZE (sizeof(vpp)/sizeof(uint16_t))
+    static uint16_t vpp[] = {0,0,0,0};
+    static int count = 0;
+    static uint32_t sumVpp = 0;
+    sumVpp -= vpp[count];
+    vpp[count] = capture.maxmV - capture.minmV;
+    sumVpp += vpp[count];
+    count = (count+1) % VPP_BUF_SIZE;
+    return (sumVpp/VPP_BUF_SIZE < mVperPixel/2);
+#undef VPP_BUF_SIZE
 }
 
 /*
