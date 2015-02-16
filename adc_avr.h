@@ -21,10 +21,10 @@ protected:
     uint8_t cur_mode;
     void setPrescaler(uint8_t mode);
 public:
-    static uint8_t prescalers[];
+    static const uint8_t prescalers[];
     uint8_t input;                           // analog input port
     uint8_t bits;                            // ADC resolution in bits
-    ADCInput(uint8_t input);
+    bool init(uint8_t input=0, uint8_t mode=0);
     uint8_t getModeCount();          // returns the number of available rates
     bool setMode(uint8_t mode); // set sampling rate from the available values
     uint32_t getClock();       // Hz for information purposes only

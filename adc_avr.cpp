@@ -25,14 +25,14 @@
 #ifdef __AVR__
 #include "adc.h"
 
-ADCInput::ADCInput(uint8_t input)
-:cur_mode(0),
- input(input),
- bits(ADC_BITS)
-{
+const uint8_t ADCInput::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
+
+bool ADCInput::init(uint8_t newInput, uint8_t mode){
+    cur_mode = 0;
+    input = newInput;
+    bits = ADC_BITS;
     pinMode(input, INPUT);
 }
-uint8_t ADCInput::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
 
 /*
  * Get the number of

@@ -16,10 +16,11 @@
 static unsigned int averagingTable[] = {32, 16,  8,  4,  0, 0};
 static unsigned int adcBits[]        = {12, 12, 10, 10, 10, 8};
 
-ADCInput::ADCInput(uint8_t input)
-:input(input)
+bool ADCInput::init(uint8_t newInput, uint8_t mode)
 {
+    input = newInput;
     pinMode(input, INPUT);
+    return setMode(mode);
 }
 
 /*
@@ -32,7 +33,7 @@ uint8_t ADCInput::getModeCount(){
 /*
  * Configure ADC for given mode.
  */
-bool ADCInput::setMode(uint8_t mode){
+bool ADCInput::setMode(uint8_t mode=0){
     if (mode < ADCInput::getModeCount()){
         cur_mode = mode;
         bits = adcBits[cur_mode];

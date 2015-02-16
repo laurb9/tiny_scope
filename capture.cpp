@@ -9,14 +9,10 @@
  */
 #include "capture.h"
 
-Capture::Capture(ADCInput adc, unsigned samples, uint16_t rangemV)
-:adc(adc),
- samples(samples),
- rangemV(rangemV)
-{
-}
-
-int Capture::init(){
+int Capture::init(ADCInput adc_in, unsigned samples_in, uint16_t rangemV_in){
+    adc = adc_in;
+    samples = samples_in;
+    rangemV = rangemV_in;
     data = (uint16_t*)calloc(samples+2, sizeof(uint16_t)); // two extra reads: 0 and a non-zero
     if (!data){
         samples = 0;
