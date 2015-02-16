@@ -10,10 +10,7 @@
  */
 #ifndef ADC_TEENSY3_
 #define ADC_TEENSY3_
-#include "adc.h"
 
-#define ADC_BITS 10
-#define ADC_CLOCK_TO_SAMPLING 15
 #define ADC_AREF_MV 3300
 
 class ADCInput : public ADCBase {
