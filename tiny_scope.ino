@@ -47,7 +47,6 @@
 
 
 extern Display display;
-static ADCInput adc;
 static Capture capture;
 
 /*
@@ -61,19 +60,19 @@ void displaySplash(){
     display.print(F("Tiny Scope"));
 
     display.setTextSize(1);
-    display.printf(F("\nINPUT A%d, VREF "), adc.input);
+    display.printf(F("\nINPUT A%d VREF "), capture.adc.input);
     display.printSmallUnits(1000L*capture.rangemV, "V\n"); // printSmallUnits expects micro[V]
     display.print(F("ADC CLOCK "));
-    display.printLargeUnits(adc.getClock(), "Hz\n");
+    display.printLargeUnits(capture.adc.getClock(), "Hz\n");
     display.print(F("Sample Rate "));
-    display.printLargeUnits(adc.getSampleRate(), "Hz\n");
+    display.printLargeUnits(capture.adc.getSampleRate(), "Hz\n");
     display.display();
     delay(4000);
 }
 
 void setup(){
-    adc.init(ADC_PIN, ADC_MODE);
-    int success = capture.init(adc, SCREEN_WIDTH, AREF_MV);
+    int success = capture.init(ADCInput(), SCREEN_WIDTH, AREF_MV);
+    capture.adc.init(ADC_PIN, ADC_MODE);
     delay(100);  // give time for display to init; if display blank increase delay
     display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
     display.setRotation(2);
