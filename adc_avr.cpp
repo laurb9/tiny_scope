@@ -32,6 +32,7 @@ bool ADCInput::init(uint8_t newInput, uint8_t mode){
     input = newInput;
     bits = ADC_BITS;
     pinMode(input, INPUT);
+    ADCInput::setMode(mode);
 }
 
 /*
@@ -42,17 +43,16 @@ uint8_t ADCInput::getModeCount(){
 }
 
 /*
- * Set ADC prescaler.
- * This should accept a clock or time base instead so it's not AVR specific.
+ * Set ADC prescaler
  */
 void ADCInput::setPrescaler(uint8_t mode){
-    // set prescaler
     if (mode < ADCInput::getModeCount()){
         cur_mode = mode;
         uint8_t prescaler = prescalers[mode];
         prescaler & 4 ? sbi(ADCSRA,ADPS2) : cbi(ADCSRA,ADPS2);
         prescaler & 2 ? sbi(ADCSRA,ADPS1) : cbi(ADCSRA,ADPS1);
         prescaler & 1 ? sbi(ADCSRA,ADPS0) : cbi(ADCSRA,ADPS0);
+        sbi(ADCSRA, ADEN);
     }
     delay(10); // allow the ADC to settle
 }

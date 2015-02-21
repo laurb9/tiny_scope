@@ -98,7 +98,7 @@ void Scope::renderGraph(uint16_t *data, uint16_t rangemV, unsigned samples, int 
         x = map(i, 0, samples-1, minX, maxX);
         y = map(*data, 0, rangemV, minY, maxY);
         if (logicMode && i>0 && abs(lastY-y)>4){
-            if (y-lastY>0){
+            if (y>lastY){
                 display.drawFastVLine(x-1,lastY,y-lastY+1,WHITE);
             } else {
                 display.drawFastVLine(x-1,y,lastY-y+1,WHITE);

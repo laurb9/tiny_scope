@@ -21,7 +21,7 @@ int Capture::init(ADCInput adc_in, unsigned samples_in, uint16_t rangemV_in){
 }
 
 /*
- * ADC allowable float for zero-detection (because of unclean ground) [mV]
+ * ADC allowable float for zero-detection (because of unclean ground)
  */
 #define ADC_JITTER 4
 /*
@@ -34,19 +34,21 @@ void Capture::capture(){
     uint16_t v;
     unsigned i = samples;
 
+    adc.read(); // allow the port to be configured (discard result)
+
     dataCur = data;
     /*
      * Attempt to latch on a zero transition
      */
-    for (unsigned j=255; j; j--){
-        v = adc.read();
+    for (unsigned j=1024; j; j--){
+        v = adc.readFast();
         if (v < ADC_JITTER){
             *dataCur++ = v;
             break;
         }
     }
-    for (unsigned j=255; j; j--){
-        v = adc.read();
+    for (unsigned j=1024; j; j--){
+        v = adc.readFast();
         if (v >= ADC_JITTER){
             *dataCur++ = v;
             break;
@@ -56,7 +58,7 @@ void Capture::capture(){
     }
     start = micros();
     for (; i; i--){
-        *dataCur++ = adc.read();
+        *dataCur++ = adc.readFast();
     }
     elapsedus = micros() - start;
 }
