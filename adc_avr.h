@@ -33,6 +33,15 @@ public:
     __inline__ uint16_t read(){
         return analogRead(input);
     }
+
+    __inline__ uint16_t readFast(){
+        // this runs just the conversion part of analogRead() without the setup
+        sbi(ADCSRA, ADSC); // ADSC=AD Start Conversion
+        loop_until_bit_is_clear(ADCSRA, ADSC); // Conversion finished
+        uint8_t low  = ADCL;
+        uint8_t high = ADCH;
+        return (high << 8) | low;
+    }
 };
 
 #endif /* ADC_AVR_H_ */

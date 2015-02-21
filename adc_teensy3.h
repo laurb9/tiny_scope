@@ -26,6 +26,9 @@ public:
     __inline__ uint16_t read(){
         return analogRead(input);
     }
+    __inline__ uint16_t readFast(){
+        return analogRead(input);
+    }
 };
 
 #endif /* ADC_TEENSY3_ */
