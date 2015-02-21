@@ -33,7 +33,7 @@ public:
     virtual uint32_t getClock(); // return ADC clock in Hz
     virtual uint32_t getSampleRate(); // sampling rate in Hz (actual read speed may vary)
     virtual uint16_t read();          // = analogRead(input)
-    virtual uint16_t readFast();      // = analogRead(input) final part
+    virtual uint16_t readFast();      // = analogRead(input) without ADC/port setup
 };
 
 #ifdef __MK20DX256__

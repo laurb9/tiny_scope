@@ -41,14 +41,14 @@ void Capture::capture(){
      * Attempt to latch on a zero transition
      */
     for (unsigned j=1024; j; j--){
-        v = adc.read();
+        v = adc.readFast();
         if (v < ADC_JITTER){
             *dataCur++ = v;
             break;
         }
     }
     for (unsigned j=1024; j; j--){
-        v = adc.read();
+        v = adc.readFast();
         if (v >= ADC_JITTER){
             *dataCur++ = v;
             break;

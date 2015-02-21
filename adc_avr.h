@@ -30,17 +30,15 @@ public:
     uint32_t getClock();       // Hz for information purposes only
     uint32_t getSampleRate();  // Hz for information purposes only
 
-    __inline__ uint16_t read(){
+    inline uint16_t read() __attribute__((always_inline)){
         return analogRead(input);
     }
 
-    __inline__ uint16_t readFast(){
+    inline uint16_t readFast() __attribute__((always_inline)){
         // this runs just the conversion part of analogRead() without the setup
         sbi(ADCSRA, ADSC); // ADSC=AD Start Conversion
         loop_until_bit_is_clear(ADCSRA, ADSC); // Conversion finished
-        uint8_t low  = ADCL;
-        uint8_t high = ADCH;
-        return (high << 8) | low;
+        return ADCL | (ADCH << 8);
     }
 };
 
