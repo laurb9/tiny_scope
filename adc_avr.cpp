@@ -90,8 +90,9 @@ void ADCInput::readMulti(uint16_t *buffer, unsigned size){
  * Interrupt for collecting ADC data after each conversion
  */
 ISR(ADC_vect){
-    if (adc_buffer < adc_buffer_end){
-        *adc_buffer++ = ADCL | (ADCH << 8);
+    *adc_buffer = ADCL | (ADCH << 8);
+    if (adc_buffer != adc_buffer_end){
+        adc_buffer++;
     } else {
         cbi(ADCSRA, ADATE);  // Disable free running
     }
