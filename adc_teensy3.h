@@ -23,11 +23,16 @@ public:
     uint32_t getClock();       // Hz for information purposes only
     uint32_t getSampleRate();  // Hz for information purposes only
 
-    __inline__ uint16_t read() __attribute__((always_inline)){
+    inline uint16_t read() __attribute__((always_inline)){
         return analogRead(input);
     }
-    __inline__ uint16_t readFast() __attribute__((always_inline)){
+    inline uint16_t readFast() __attribute__((always_inline)){
         return analogRead(input);
+    }
+    inline void readMulti(uint16_t *buffer, unsigned size){
+        for (; size; size--){
+            *buffer++ = analogRead(input);
+        }
     }
 };
 

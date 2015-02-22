@@ -32,7 +32,7 @@ void Capture::capture(){
     uint32_t start;
     uint16_t *dataCur;
     uint16_t v;
-    unsigned i = samples;
+    unsigned j;
 
     adc.read(); // allow the port to be configured (discard result)
 
@@ -40,14 +40,14 @@ void Capture::capture(){
     /*
      * Attempt to latch on a zero transition
      */
-    for (unsigned j=1024; j; j--){
+    for (j=1024; j; j--){
         v = adc.readFast();
         if (v < ADC_JITTER){
             *dataCur++ = v;
             break;
         }
     }
-    for (unsigned j=1024; j; j--){
+    for (j=1024; j; j--){
         v = adc.readFast();
         if (v >= ADC_JITTER){
             *dataCur++ = v;
@@ -57,9 +57,7 @@ void Capture::capture(){
         }
     }
     start = micros();
-    for (; i; i--){
-        *dataCur++ = adc.readFast();
-    }
+    adc.readMulti(dataCur, samples);
     elapsedus = micros() - start;
 }
 

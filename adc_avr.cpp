@@ -32,6 +32,8 @@ bool ADCInput::init(uint8_t newInput, uint8_t mode){
     input = newInput;
     bits = ADC_BITS;
     pinMode(input, INPUT);
+    if (input <= 5)
+        sbi(DIDR0, 1 << input); // Digital input buffer disable (reduce power consumption)
     ADCInput::setMode(mode);
 }
 
@@ -65,6 +67,35 @@ bool ADCInput::setMode(uint8_t mode){
     return 1;
 }
 
+/*
+ * Perform a series of readings, saving into a data buffer
+ */
+volatile uint16_t *adc_buffer, *adc_buffer_end;
+void ADCInput::readMulti(uint16_t *buffer, unsigned size){
+    adc_buffer = buffer;
+    adc_buffer_end = buffer + size;
+    //cbi(ADCSRB, ADTS2); // Set trigger to free-running (this is the default)
+    //cbi(ADCSRB, ADTS1);
+    //cbi(ADCSRB, ADTS0);
+    sbi(ADCSRA, ADATE); // Enable trigger
+    sbi(ADCSRA, ADIE);  // Enable interrupt
+    sei();              // Enable global interrupts
+    sbi(ADCSRA, ADSC);  // ADSC=AD Start Conversion
+
+    loop_until_bit_is_clear(ADCSRA, ADATE); // Wait for conversion to finish
+
+    cbi(ADCSRA, ADIE);
+}
+/*
+ * Interrupt for collecting ADC data after each conversion
+ */
+ISR(ADC_vect){
+    if (adc_buffer < adc_buffer_end){
+        *adc_buffer++ = ADCL | (ADCH << 8);
+    } else {
+        cbi(ADCSRA, ADATE);  // Disable free running
+    }
+}
 
 /*
  * Return ADC clock in Hz. This is only useful to estimate sampling rate.
@@ -79,5 +110,4 @@ uint32_t ADCInput::getClock(){
 uint32_t ADCInput::getSampleRate(){
     return ADCInput::getClock() / ADC_CLOCK_TO_SAMPLING;
 }
-
 #endif /* __AVR__ */
