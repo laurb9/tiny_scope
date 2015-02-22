@@ -29,6 +29,7 @@ public:
     bool setMode(uint8_t mode); // set sampling rate from the available values
     uint32_t getClock();       // Hz for information purposes only
     uint32_t getSampleRate();  // Hz for information purposes only
+    void readMulti(uint16_t *buffer, unsigned size); // multi-sample read
 
     inline uint16_t read() __attribute__((always_inline)){
         return analogRead(input);

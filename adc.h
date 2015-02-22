@@ -30,10 +30,15 @@ public:
     virtual bool init(uint8_t input=0, uint8_t mode=0);
     virtual uint8_t getModeCount();      // returns the number of available sampling rates (>0)
     virtual bool setMode(uint8_t mode);  // set mode 0 - getModeCount()-1. True if successful.
-    virtual uint32_t getClock(); // return ADC clock in Hz
-    virtual uint32_t getSampleRate(); // sampling rate in Hz (actual read speed may vary)
+
+    // ADC read functionality
     virtual uint16_t read();          // = analogRead(input)
     virtual uint16_t readFast();      // = analogRead(input) without ADC/port setup
+    virtual void readMulti(uint16_t *buffer, unsigned size);
+
+    // these are not really necessary, just to show the info if available on splash page
+    virtual uint32_t getClock(); // return ADC clock in Hz
+    virtual uint32_t getSampleRate(); // sampling rate in Hz (actual read speed may vary)
 };
 
 #ifdef __MK20DX256__
