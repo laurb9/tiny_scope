@@ -14,6 +14,7 @@
 #include <Adafruit_GFX.h>
 #endif
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "adc.h"
 #include "scope.h"
 #include "capture.h"
@@ -25,14 +26,12 @@
 // Which analog input to read the data from.
 #define ADC_PIN 1
 
+// Which digital input the button is on - use to cycle through all the ADC modes
+#define MODE_BUTTON_PIN 7
+
 // ADC reference voltage (mV). Default 5000 for AVR 5V, 3300 for Teensy3
 // Change this if AREF is connected to a different voltage reference
 #define AREF_MV ADC_AREF_MV
-
-// ADC mode (0-5, 0 = default, 5 = fastest less accurate)
-// This is NOT the prescaler value, just an index in a table in adc.cpp
-// On a 16MHz UNO R3, the grid is 2ms apart while on 5 it goes down to 0.1ms
-#define ADC_MODE 0
 
 // Address of I2C OLED display. If screen looks scaled edit Adafruit_SSD1306.h
 // and pick SSD1306_128_64 or SSD1306_128_32 that matches display type.
@@ -45,6 +44,8 @@
  * End Configurable parameters
  ****************************************************************************/
 
+// Address to start last ADC mode used in EEPROM.
+#define ADC_MODE_ADDR 0
 
 extern Display display;
 static Capture capture;
@@ -67,17 +68,17 @@ void displaySplash(){
     display.print(F("Sample Rate "));
     display.printLargeUnits(capture.adc.getSampleRate(), "Hz\n");
     display.display();
-    delay(4000);
 }
 
 void setup(){
     int success = capture.init(ADCInput(), SCREEN_WIDTH, AREF_MV);
-    capture.adc.init(ADC_PIN, ADC_MODE);
+    capture.adc.init(ADC_PIN, EEPROM.read(ADC_MODE_ADDR));
     delay(100);  // give time for display to init; if display blank increase delay
     display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
     display.setRotation(2);
     // Configure capture one sample per pixel (SCREEN_WIDTH samples)
     displaySplash();
+    delay(4000);
     if (success){
         display.print(F("Reading A/D data..."));
     } else {
@@ -98,6 +99,34 @@ void setup(){
     analogWrite(9, 64); // 488Hz 0.512ms pulse, 2.05ms period
     analogWrite(5, 64); // 976Hz 0.255ms pulse, 1.02ms period
 #endif
+
+    /*
+     * Enable ADC mode button
+     */
+    pinMode(MODE_BUTTON_PIN, INPUT);
+    digitalWrite(MODE_BUTTON_PIN, HIGH);
+}
+
+/*
+ * Cycle through the ADC modes with each button push.
+ */
+void setADCMode(){
+    int adcMode = EEPROM.read(ADC_MODE_ADDR);
+    unsigned count = 0;
+    
+    if (digitalRead(MODE_BUTTON_PIN) == LOW){
+        // Freeze display while button stays pressed
+        while (digitalRead(MODE_BUTTON_PIN) == LOW){
+            delay(50);
+            count++;
+        }
+        // Momentary push (0.5s) means adc mode switch; long push freeze only
+        if (count < 10){
+            adcMode = (adcMode+1) % capture.adc.getModeCount();
+            capture.adc.setMode(adcMode);
+            EEPROM.write(ADC_MODE_ADDR, byte(adcMode));
+        }
+    }
 }
 
 void loop(){
@@ -121,6 +150,7 @@ void loop(){
     }
     display.display();
 
+    setADCMode();
     // displaying at max 20fps
     delay(50);
 }
