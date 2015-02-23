@@ -14,6 +14,7 @@
 #include <Adafruit_GFX.h>
 #endif
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "adc.h"
 #include "scope.h"
 #include "capture.h"
@@ -32,11 +33,6 @@
 // Change this if AREF is connected to a different voltage reference
 #define AREF_MV ADC_AREF_MV
 
-// ADC mode (0-5, 0 = default, 5 = fastest less accurate)
-// This is NOT the prescaler value, just an index in a table in adc.cpp
-// On a 16MHz UNO R3, the grid is 2ms apart while on 5 it goes down to 0.1ms
-#define ADC_MODE 0
-
 // Address of I2C OLED display. If screen looks scaled edit Adafruit_SSD1306.h
 // and pick SSD1306_128_64 or SSD1306_128_32 that matches display type.
 #define DISPLAY_I2C_ADDRESS 0x3C
@@ -48,6 +44,8 @@
  * End Configurable parameters
  ****************************************************************************/
 
+// Address to start last ADC mode used in EEPROM.
+#define ADC_MODE_ADDR 0
 
 extern Display display;
 static Capture capture;
@@ -74,7 +72,7 @@ void displaySplash(){
 
 void setup(){
     int success = capture.init(ADCInput(), SCREEN_WIDTH, AREF_MV);
-    capture.adc.init(ADC_PIN, ADC_MODE);
+    capture.adc.init(ADC_PIN, EEPROM.read(ADC_MODE_ADDR));
     delay(100);  // give time for display to init; if display blank increase delay
     display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
     display.setRotation(2);
@@ -117,14 +115,15 @@ void setADCMode(){
         BUTTON_ON, 
         BUTTON_OFF
     };
-    static int modeButtonState = BUTTON_OFF;
-    static int adcMode = ADC_MODE;
-
-    if (!digitalRead(MODE_BUTTON_PIN)){
+    static uint8_t modeButtonState = BUTTON_OFF;
+    int adcMode = EEPROM.read(ADC_MODE_ADDR);
+    
+    if (digitalRead(MODE_BUTTON_PIN) == LOW){
         if (modeButtonState == BUTTON_OFF){
             modeButtonState = BUTTON_ON;
             adcMode = (adcMode+1) % capture.adc.getModeCount();
             capture.adc.setMode(adcMode);
+            EEPROM.write(ADC_MODE_ADDR, byte(adcMode));
         }
     } else {
         modeButtonState = BUTTON_OFF;
