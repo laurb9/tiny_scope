@@ -111,22 +111,21 @@ void setup(){
  * Cycle through the ADC modes with each button push.
  */
 void setADCMode(){
-    enum {
-        BUTTON_ON, 
-        BUTTON_OFF
-    };
-    static uint8_t modeButtonState = BUTTON_OFF;
     int adcMode = EEPROM.read(ADC_MODE_ADDR);
+    unsigned count = 0;
     
     if (digitalRead(MODE_BUTTON_PIN) == LOW){
-        if (modeButtonState == BUTTON_OFF){
-            modeButtonState = BUTTON_ON;
+        // Freeze display while button stays pressed
+        while (digitalRead(MODE_BUTTON_PIN) == LOW){
+            delay(50);
+            count++;
+        }
+        // Momentary push (0.5s) means adc mode switch; long push freeze only
+        if (count < 10){
             adcMode = (adcMode+1) % capture.adc.getModeCount();
             capture.adc.setMode(adcMode);
             EEPROM.write(ADC_MODE_ADDR, byte(adcMode));
         }
-    } else {
-        modeButtonState = BUTTON_OFF;
     }
 }
 
