@@ -6,7 +6,7 @@ and <a href="http://www.adafruit.com/products/326">Monochrome 0.96" 128x64 OLED 
 
 Features
 ========
-- Configurable ADC speed for sampling rates from 9KHz to 147KHz (on UNO)
+- Configurable ADC speed for sampling rates from 10KHz to 200KHz (on UNO)
 - Auto grid on time base from 2ms to 0.1ms (on UNO)
 - 0V trigger
 - Display minimum-maximum voltage of captured signal
@@ -15,14 +15,14 @@ Features
 
 The screenshots below are on a two-color display (top yellow, rest blue). For a 5V system, the dots change to yellow above 3.45V, which may be handy.
 
-Default ADC settings on the UNO watching a 490Hz PWM (pin 9). The actual read speed is about 9KHz even though sampling rate is 10KHz.
+Default ADC settings on the UNO watching a 490Hz PWM (pin 9).
 
 <img src="http://www.wotevah.com/tiny_scope/images/uno_splash_default.jpg" 
      width="162" alt="Arduino UNO R3, default ADC settings">
 <img src="http://www.wotevah.com/tiny_scope/images/uno_default_2ms.jpg" 
      width="162" alt="Arduino UNO R3, default ADC settings, 488Hz signal">
 
-Fastest ADC settings on UNO (16MHz). I get a read speed of 147KHz, so about half the sampling rate. The signal displayed is a 980Hz PWM with 25% duty cycle (pin 5).
+UNO. The signal displayed is a 980Hz PWM with 25% duty cycle (pin 5).
 
 <img src="http://www.wotevah.com/tiny_scope/images/uno_splash_fastest.jpg" 
      width="162" alt="Arduino UNO R3, fastest ADC settings">
@@ -43,6 +43,7 @@ Connections
 - OLED SCL   - A5 or SCL (Teensy SCL0 pin 19)
 - OLED SDA   - A4 or SDA (Teensy SDA0 pin 18)
 - PROBE WIRE - A1 (defined in tiny_scope.ino) (Teensy pin 15)
+- BUTTON     - D7 button to GND
 
 Testing
 =======
@@ -50,6 +51,8 @@ Testing
 - A1 to GND should display 0.00 V
 - A1 to D9 (Teensy pin 9) should display a square wave (PWM) with >2ms period and >0.5ms pulse
 - A1 to D5 should display a square wave (PWM) with >1ms period and >0.2ms pulse
+- Momentary (<0.5s) push on D7 switch cycles through available sampling speeds
+- Long >0.5s push on D7 freezes display.
 
 Entire project
 ==============
