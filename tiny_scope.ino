@@ -25,6 +25,9 @@
 // Which analog input to read the data from.
 #define ADC_PIN 1
 
+// Which digital input the button is on - use to cycle through all the ADC modes
+#define MODE_BUTTON_PIN 7
+
 // ADC reference voltage (mV). Default 5000 for AVR 5V, 3300 for Teensy3
 // Change this if AREF is connected to a different voltage reference
 #define AREF_MV ADC_AREF_MV
@@ -67,7 +70,6 @@ void displaySplash(){
     display.print(F("Sample Rate "));
     display.printLargeUnits(capture.adc.getSampleRate(), "Hz\n");
     display.display();
-    delay(4000);
 }
 
 void setup(){
@@ -78,6 +80,7 @@ void setup(){
     display.setRotation(2);
     // Configure capture one sample per pixel (SCREEN_WIDTH samples)
     displaySplash();
+    delay(4000);
     if (success){
         display.print(F("Reading A/D data..."));
     } else {
@@ -98,6 +101,34 @@ void setup(){
     analogWrite(9, 64); // 488Hz 0.512ms pulse, 2.05ms period
     analogWrite(5, 64); // 976Hz 0.255ms pulse, 1.02ms period
 #endif
+
+    /*
+     * Enable ADC mode button
+     */
+    pinMode(MODE_BUTTON_PIN, INPUT);
+    digitalWrite(MODE_BUTTON_PIN, HIGH);
+}
+
+/*
+ * Cycle through the ADC modes with each button push.
+ */
+void setADCMode(){
+    enum {
+        BUTTON_ON, 
+        BUTTON_OFF
+    };
+    static int modeButtonState = BUTTON_OFF;
+    static int adcMode = ADC_MODE;
+
+    if (!digitalRead(MODE_BUTTON_PIN)){
+        if (modeButtonState == BUTTON_OFF){
+            modeButtonState = BUTTON_ON;
+            adcMode = (adcMode+1) % capture.adc.getModeCount();
+            capture.adc.setMode(adcMode);
+        }
+    } else {
+        modeButtonState = BUTTON_OFF;
+    }
 }
 
 void loop(){
@@ -121,6 +152,7 @@ void loop(){
     }
     display.display();
 
+    setADCMode();
     // displaying at max 20fps
     delay(50);
 }
