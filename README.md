@@ -13,28 +13,22 @@ Features
 - "Logic" mode shows square waveforms properly
 - Auto voltmeter mode when input is steady
 
-The screenshots below are on a two-color display (top yellow, rest blue). For a 5V system, the dots change to yellow above 3.45V, which may be handy.
-
-Default ADC settings on the UNO watching a 490Hz PWM (pin 9).
+The screenshots below are on a two-color display (yellow/blue).
 
 <img src="http://www.wotevah.com/tiny_scope/images/uno_splash_default.jpg" 
      width="162" alt="Arduino UNO R3, default ADC settings">
 <img src="http://www.wotevah.com/tiny_scope/images/uno_default_2ms.jpg" 
-     width="162" alt="Arduino UNO R3, default ADC settings, 488Hz signal">
-
-UNO. The signal displayed is a 980Hz PWM with 25% duty cycle (pin 5).
+     width="162" alt="Arduino UNO R3, default ADC settings, sine wave">
 
 <img src="http://www.wotevah.com/tiny_scope/images/uno_splash_fastest.jpg" 
      width="162" alt="Arduino UNO R3, fastest ADC settings">
 <img src="http://www.wotevah.com/tiny_scope/images/uno_fastest_01ms.jpg" 
      width="162" alt="Arduino UNO R3, fastest ADC settings, 1KHz signal">
 
-Voltmeter mode is automatically switched on with a steady voltage signal (when it would be represented by a flat line). Last picture is random noise picked up by the test lead.
+Voltmeter mode is automatically switched on with a steady voltage signal (when it would be represented by a flat line).
 
 <img src="http://wotevah.com/tiny_scope/images/voltmeter_3.jpg" 
      width="162" alt="Voltmeter mode">
-<img src="http://wotevah.com/tiny_scope/images/noise_2.jpg" 
-     width="162" alt="Noise">
 
 Connections
 ===========
