@@ -51,6 +51,16 @@ extern Display display;
 static Capture capture;
 
 /*
+ * Get free memory 
+ * https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
+ */
+int freeRam(){
+    extern int __heap_start, *__brkval;
+    int v;
+    return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+}
+
+/*
  * Display splash screen
  */
 void displaySplash(){
@@ -67,6 +77,7 @@ void displaySplash(){
     display.printLargeUnits(capture.adc.getClock(), "Hz\n");
     display.print(F("Sample Rate "));
     display.printLargeUnits(capture.adc.getSampleRate(), "Hz\n");
+    display.printf(F("MemAv: %u bytes\n"), freeRam());
     display.display();
 }
 
