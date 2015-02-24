@@ -63,41 +63,17 @@ void Scope::renderGrid(uint32_t elapsed, uint16_t rangemV){
 }
 
 /*
- * Return the value of the logic mode flag.
- * 1: enable, 0: disable
- */
-int Scope::getLogicMode(Capture capture){
-    uint16_t *data = capture.data;
-    uint16_t x, y, lastY = *data;
-
-    // TODO: turn on logicMode if most of the values are near minmV and maxmV
-
-    // turn off logicMode if the display would be too cluttered with vertical lines
-    unsigned transitionsUp = 0, transitionsDown = 0;
-    for (x=1; x<capture.samples; x++, data++){
-        y = *data;
-        uint16_t diff = (y > lastY) ? y-lastY : lastY-y;
-        if (diff > 2*mVperPixel){
-            if (y > lastY) transitionsUp++;
-            else transitionsDown++;
-        }
-        lastY = y;
-    }
-    return (transitionsUp+transitionsDown < capture.samples/4);
-}
-
-/*
  * Draw the mV values on the graph
  * The screen is inverted so Y=0 corresponds to 5V
  */
-void Scope::renderGraph(uint16_t *data, uint16_t rangemV, unsigned samples, int logicMode){
+void Scope::renderGraph(uint16_t *data, uint16_t rangemV, unsigned samples){
     uint16_t i, x, y, lastY = 0;
 
     // render data graph
     for (i=0; i<samples; i++, data++){
         x = map(i, 0, samples-1, minX, maxX);
         y = map(*data, 0, rangemV, minY, maxY);
-        if (logicMode && i>0 && abs(lastY-y)>4){
+        if (abs(lastY-y)>1){
             if (y>lastY){
                 display.drawFastVLine(x-1,lastY,y-lastY+1,WHITE);
             } else {
@@ -153,7 +129,7 @@ int Scope::isFlatLine(Capture capture){
  */
 void Scope::displayScope(Capture capture){
     Scope::renderGrid(capture.elapsedus, capture.rangemV);
-    Scope::renderGraph(capture.data, capture.rangemV, capture.samples, Scope::getLogicMode(capture));
+    Scope::renderGraph(capture.data, capture.rangemV, capture.samples);
     Scope::renderStatusBar(capture);
 }
 
