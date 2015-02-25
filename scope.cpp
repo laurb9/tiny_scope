@@ -73,15 +73,14 @@ void Scope::renderGraph(uint16_t *data, uint16_t rangemV, unsigned samples){
     for (i=0; i<samples; i++, data++){
         x = map(i, 0, samples-1, minX, maxX);
         y = map(*data, 0, rangemV, minY, maxY);
-        if (abs(lastY-y)>1){
-            if (y>lastY){
-                display.drawFastVLine(x-1,lastY,y-lastY+1,WHITE);
-            } else {
-                display.drawFastVLine(x-1,y,lastY-y+1,WHITE);
-            }
-        };
+        if (y > lastY+1 && x){
+            display.drawFastVLine(x,lastY,y-lastY+1,WHITE);
+        } else if (lastY > y+1 && x){
+            display.drawFastVLine(x,y,lastY-y+1,WHITE);
+        } else {
+            display.drawPixel(x, y, WHITE);
+        }
         lastY=y;
-        display.drawPixel(x, y, WHITE);
     }
 }
 
