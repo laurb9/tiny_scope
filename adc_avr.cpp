@@ -23,12 +23,13 @@
  * http://forum.arduino.cc/index.php/topic,6549.0.html
  */
 #ifdef __AVR__
-#include "adc.h"
+#include "adc_avr.h"
+#if defined(ADCSRA) && defined(ADCL)
 
 const uint8_t ADCInput::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
 
 bool ADCInput::init(uint8_t newInput, uint8_t mode){
-    cur_mode = 0;
+    curMode = 0;
     input = newInput;
     bits = ADC_BITS;
     pinMode(input, INPUT);
@@ -49,7 +50,7 @@ uint8_t ADCInput::getModeCount(){
  */
 void ADCInput::setPrescaler(uint8_t mode){
     if (mode < ADCInput::getModeCount()){
-        cur_mode = mode;
+        curMode = mode;
         uint8_t prescaler = prescalers[mode];
         prescaler & 4 ? sbi(ADCSRA,ADPS2) : cbi(ADCSRA,ADPS2);
         prescaler & 2 ? sbi(ADCSRA,ADPS1) : cbi(ADCSRA,ADPS1);
@@ -111,4 +112,5 @@ uint32_t ADCInput::getClock(){
 uint32_t ADCInput::getSampleRate(){
     return ADCInput::getClock() / ADC_CLOCK_TO_SAMPLING;
 }
-#endif /* __AVR__ */
+#endif /* defined(ADCSRA) && defined(ADCL) */
+#endif /* defined(__AVR__) */

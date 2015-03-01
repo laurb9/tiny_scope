@@ -10,6 +10,7 @@
  */
 #ifndef ADC_TEENSY3_
 #define ADC_TEENSY3_
+#include "adc.h"
 
 #define ADC_AREF_MV 3300
 

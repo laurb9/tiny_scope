@@ -16,6 +16,16 @@
 #define ADC_CLOCK_TO_SAMPLING 13
 #define ADC_AREF_MV 5000
 
+
+// defines for setting and clearing register bits
+#ifndef cbi
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+#ifndef sbi
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#endif
+
+
 class ADCInput : public ADCBase {
 protected:
     uint8_t cur_mode;

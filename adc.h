@@ -12,39 +12,78 @@
 #define ADC_H_
 #include <Arduino.h>
 
-// defines for setting and clearing register bits
-#ifndef cbi
-#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
-#endif
-#ifndef sbi
-#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
-#endif
+#define ADC_BITS 10
 
+/*
+ * This is the portable interface that capture uses and should work on any Arduino device.
+ * Chip-specific classes will build upon this.
+ */
 
 class ADCBase {
 protected:
-    uint8_t cur_mode;
+    uint8_t curMode;
 public:
     uint8_t input;                       // analog input port connected to this ADC
     uint8_t bits;                        // ADC resolution in bits
-    virtual bool init(uint8_t input=0, uint8_t mode=0);
-    virtual uint8_t getModeCount();      // returns the number of available sampling rates (>0)
-    virtual bool setMode(uint8_t mode);  // set mode 0 - getModeCount()-1. True if successful.
 
-    // ADC read functionality
-    virtual uint16_t read();          // = analogRead(input)
-    virtual uint16_t readFast();      // = analogRead(input) without ADC/port setup
-    virtual void readMulti(uint16_t *buffer, unsigned size);
+    /*
+     * Setup functionality
+     */
+    bool init(uint8_t inputPin=0, uint8_t mode=0){
+        input = inputPin;
+        return ADCBase::setMode(mode);
+    };
+    // get the number of available sampling rates (>0)
+    uint8_t getModeCount(){
+        return 1; // there is only one mode in portable mode (default)
+    }
+    // set mode to 0 - getModeCount()-1. True if successful.
+    bool setMode(uint8_t mode){
+        curMode = 0;
+        bits = ADC_BITS;
+        return (mode == curMode);
+    };
 
-    // these are not really necessary, just to show the info if available on splash page
-    virtual uint32_t getClock(); // return ADC clock in Hz
-    virtual uint32_t getSampleRate(); // sampling rate in Hz (actual read speed may vary)
+    /*
+     * ADC read functionality
+     */
+    // = analogRead(input)
+    inline uint16_t read() __attribute__((always_inline)){
+        return analogRead(input);
+    }
+    // = analogRead(input) without ADC/port setup
+    inline uint16_t readFast() __attribute__((always_inline)){
+        return analogRead(input);
+    }
+    // bulk read "size" samples into buffer
+    void readMulti(uint16_t *buffer, unsigned size){
+        for (; size; size--){
+            *buffer++ = ADCBase::readFast();
+        }
+    };
+
+    /*
+     * ADC Information
+     * These are not really necessary, just to show the info if available on splash page
+     */
+    // get ADC clock in Hz
+    uint32_t getClock(){
+        return 0;
+    }
+    // sampling rate in Hz (actual read speed may vary)
+    uint32_t getSampleRate(){
+        return 0;
+    }
 };
 
 #ifdef __MK20DX256__
 #include "adc_teensy3.h"
-#elif __AVR__
+#elif defined(__AVR__) && defined(ADCSRA) && defined(ADCL)
 #include "adc_avr.h"
+#else
+#define ADC_AREF_MV 5000
+class ADCInput : public ADCBase {
+};
 #endif
 
 #endif /* ADC_H_ */
