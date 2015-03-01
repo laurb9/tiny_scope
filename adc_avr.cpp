@@ -79,24 +79,15 @@ void ADCInput::readMulti(uint16_t *buffer, unsigned size){
     //cbi(ADCSRB, ADTS1);
     //cbi(ADCSRB, ADTS0);
     sbi(ADCSRA, ADATE); // Enable trigger
-    sbi(ADCSRA, ADIE);  // Enable interrupt
-    sei();              // Enable global interrupts
+    cbi(ADCSRA, ADIE);  // Disable interrupt (default)
     sbi(ADCSRA, ADSC);  // ADSC=AD Start Conversion
 
-    loop_until_bit_is_clear(ADCSRA, ADATE); // Wait for conversion to finish
-
-    cbi(ADCSRA, ADIE);
-}
-/*
- * Interrupt for collecting ADC data after each conversion
- */
-ISR(ADC_vect){
-    *adc_buffer = ADCL | (ADCH << 8);
-    if (adc_buffer != adc_buffer_end){
-        adc_buffer++;
-    } else {
-        cbi(ADCSRA, ADATE);  // Disable free running
+    while (adc_buffer != adc_buffer_end){
+        loop_until_bit_is_set(ADCSRA, ADIF); // Wait for conversion to finish
+        *adc_buffer++ = ADCL | (ADCH << 8);
+        sbi(ADCSRA, ADIF);
     }
+    cbi(ADCSRA, ADATE);  // Disable free running
 }
 
 /*
