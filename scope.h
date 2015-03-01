@@ -26,13 +26,12 @@ protected:
     uint16_t timeBase;     // grid spacing in microseconds
     uint16_t mVperPixel;   // visible mV resolution on screen
     void renderGrid(uint32_t elapsed, uint16_t rangemV);
-    void renderGraph(uint16_t *data, uint16_t rangemV, unsigned samples, int logicMode);
+    void renderGraph(uint16_t *data, uint16_t rangemV, unsigned samples);
     void renderStatusBar(Capture capture);
     uint32_t calcGridStep(uint32_t length, uint16_t count);
 public:
     Scope(Display display, uint16_t minX, uint16_t maxX, uint16_t minY, uint16_t maxY);
     int isFlatLine(Capture capture);
-    int getLogicMode(Capture capture);
     void displayScope(Capture capture);
     void displayVoltMeter(Capture capture);
 };
