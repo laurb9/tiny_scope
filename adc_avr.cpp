@@ -103,7 +103,7 @@ ISR(ADC_vect){
  * Return ADC clock in Hz. This is only useful to estimate sampling rate.
  */
 uint32_t ADCInput::getClock(){
-    return F_CPU/(1<<prescalers[cur_mode]);
+    return F_CPU/(1<<prescalers[curMode]);
 }
 
 /*

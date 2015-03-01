@@ -28,7 +28,7 @@
 
 class ADCInput : public ADCBase {
 protected:
-    uint8_t cur_mode;
+    uint8_t curMode;
     void setPrescaler(uint8_t mode);
 public:
     static const uint8_t prescalers[];
