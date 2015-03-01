@@ -1,34 +1,34 @@
 Tiny Scope for Arduino
 ======================
 
-Requires: <a href="http://arduino.cc/en/Main/ArduinoBoardUno">Arduino UNO R3</a> or <a href="http://www.pjrc.com/teensy/index.html">Teensy USB</a> board
-and <a href="http://www.adafruit.com/products/326">Monochrome 0.96" 128x64 OLED graphic display</a> (SSD1306 driver)
-
 Features
 ========
-- Configurable ADC speed for sampling rates from 10KHz to 200KHz (on UNO)
-- Auto grid on time base from 2ms to 0.1ms (on UNO)
-- 0V trigger
+- Configurable ADC speed for sampling rates from 10KHz to 300KHz (on UNO)
+- Auto grid on time base from 2ms to 50us (on UNO)
+- 0V auto trigger
 - Display minimum-maximum voltage of captured signal
-- "Logic" mode shows square waveforms properly
+- Square waveforms are displayed properly
 - Auto voltmeter mode when input is steady
 
 The screenshots below are on a two-color display (yellow/blue).
 
-<img src="http://www.wotevah.com/tiny_scope/images/uno_splash_default.jpg" 
+<img src="http://www.wotevah.com/tiny_scope/images/arduino_default_splash.jpg" 
      width="162" alt="Arduino UNO R3, default ADC settings">
-<img src="http://www.wotevah.com/tiny_scope/images/uno_default_2ms.jpg" 
+<img src="http://www.wotevah.com/tiny_scope/images/arduino_default_scope.jpg" 
      width="162" alt="Arduino UNO R3, default ADC settings, sine wave">
 
-<img src="http://www.wotevah.com/tiny_scope/images/uno_splash_fastest.jpg" 
+<img src="http://www.wotevah.com/tiny_scope/images/arduino_fast_splash.jpg" 
      width="162" alt="Arduino UNO R3, fastest ADC settings">
-<img src="http://www.wotevah.com/tiny_scope/images/uno_fastest_01ms.jpg" 
-     width="162" alt="Arduino UNO R3, fastest ADC settings, 1KHz signal">
+<img src="http://www.wotevah.com/tiny_scope/images/arduino_fast_scope.jpg" 
+     width="162" alt="Arduino UNO R3, fastest ADC settings, 255us PWM pulse">
 
 Voltmeter mode is automatically switched on with a steady voltage signal (when it would be represented by a flat line).
 
 <img src="http://wotevah.com/tiny_scope/images/voltmeter_3.jpg" 
      width="162" alt="Voltmeter mode">
+
+Requires: <a href="http://arduino.cc/en/Main/ArduinoBoardUno">Arduino UNO R3</a> or <a href="http://www.pjrc.com/teensy/index.html">Teensy USB</a> board
+and <a href="http://www.adafruit.com/products/326">Monochrome 0.96" 128x64 OLED graphic display</a> (SSD1306 driver)
 
 Connections
 ===========
@@ -58,7 +58,13 @@ UNO R3 and Teensy 3.1 (with upside-down display mode).
 
 Parts
 =====
-- <a href="https://www.sparkfun.com/products/11021">Arduino UNO R3</a>, <a href="http://www.adafruit.com/category/17?&main_page=index&cPath=17">Other Arduino board</a> or <a href="http://www.pjrc.com/teensy/index.html"</a> (less expensive but much more powerful)
+- Arduino board:
+  - <a href="https://www.sparkfun.com/products/11021">Arduino UNO R3</a>, 
+    <a href="https://www.sparkfun.com/products/11113">Arduino Pro Mini</a>,
+    <a href="https://www.adafruit.com/products/2000">Arduino Pro Trinket</a> or
+    <a href="http://www.adafruit.com/category/17?&main_page=index&cPath=17">Other Arduino Atmega328 board</a>,
+    or 
+  - <a href="http://www.pjrc.com/teensy/index.html">Teensy 3</a> (less expensive and more powerful)
 - <a href="http://www.amazon.com/Yellow-Serial-128X64-Display-Arduino/dp/B00O2LLT30">0.96" OLED display</a> with SSD1306 and I2C mode (that's what I tried. SPI mode is also supported by the Adafruit library but wiring is different). <a href="http://www.adafruit.com/products/938">Many stores</a> sell these and in different colors.
 - <a href="http://arduino.cc/en/Main/Software">Arduino IDE</a>
 - type B USB cable, few jumper wires
