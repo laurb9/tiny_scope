@@ -9,7 +9,7 @@
  *
  */
 #ifdef __MK20DX256__
-#include "adc.h"
+#include "adc_teensy3.h"
 
 #define ADC_CLOCK_TO_SAMPLING 15
 
@@ -35,10 +35,10 @@ uint8_t ADCInput::getModeCount(){
  */
 bool ADCInput::setMode(uint8_t mode=0){
     if (mode < ADCInput::getModeCount()){
-        cur_mode = mode;
-        bits = adcBits[cur_mode];
+        curMode = mode;
+        bits = adcBits[mode];
         analogReadRes(bits);
-        analogReadAveraging(averagingTable[cur_mode]);
+        analogReadAveraging(averagingTable[mode]);
         return true;
     } else {
         return false;

@@ -62,10 +62,12 @@ void displaySplash(){
     display.setTextSize(1);
     display.printf(F("\nINPUT A%d VREF "), capture.adc.input);
     display.printSmallUnits(1000L*capture.rangemV, "V\n"); // printSmallUnits expects micro[V]
-    display.print(F("ADC CLOCK "));
-    display.printLargeUnits(capture.adc.getClock(), "Hz\n");
-    display.print(F("Sample Rate "));
-    display.printLargeUnits(capture.adc.getSampleRate(), "Hz\n");
+    if (capture.adc.getClock()){
+        display.print(F("ADC CLOCK "));
+        display.printLargeUnits(capture.adc.getClock(), "Hz\n");
+        display.print(F("Sample Rate "));
+        display.printLargeUnits(capture.adc.getSampleRate(), "Hz\n");
+    }
     display.display();
     delay(4000);
 }
