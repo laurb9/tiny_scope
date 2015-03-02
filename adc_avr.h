@@ -29,7 +29,7 @@
 class ADCInput : public ADCBase {
 protected:
     uint8_t curMode;
-    void setPrescaler(uint8_t mode);
+    bool setPrescaler(uint8_t mode);
 public:
     static const uint8_t prescalers[];
     uint8_t input;                           // analog input port
@@ -51,6 +51,7 @@ public:
         loop_until_bit_is_clear(ADCSRA, ADSC); // Conversion finished
         return ADCL | (ADCH << 8);
     }
+    uint16_t calibrateAREF();
 };
 
 #endif /* ADC_AVR_H_ */

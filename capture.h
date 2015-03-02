@@ -20,6 +20,7 @@ public:
     uint16_t *data;
 
     int init(ADCInput adc, unsigned samples, uint16_t rangemV);
+    void calibrate();
     void capture();
     void tomV();
 };
