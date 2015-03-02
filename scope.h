@@ -16,7 +16,7 @@
 // Maximum number of horizontal grid lines
 #define MAX_X_GRID_LINES 10
 // Maximum number of vertical grid lines
-#define MAX_Y_GRID_LINES 5
+#define MAX_Y_GRID_LINES 6
 
 class Scope {
 protected:

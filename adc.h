@@ -61,6 +61,10 @@ public:
             *buffer++ = ADCBase::readFast();
         }
     };
+    // calibration function, return corrected AREF based on Vbg measured against it.
+    uint16_t calibrateAREF(){
+        return 0;
+    }
 
     /*
      * ADC Information

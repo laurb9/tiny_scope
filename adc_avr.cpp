@@ -26,6 +26,10 @@
 #include "adc_avr.h"
 #if defined(ADCSRA) && defined(ADCL)
 
+// Actual voltage of Vbg (internal 1.1V ref) in mV. This is different from chip to chip.
+// = 5000*1100/VREFmeasured (with accurate multimeter). 3300*1100/VREFmeasured for 3.3V systems.
+#define INTERNAL_REF_MV 1090
+
 const uint8_t ADCInput::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
 
 bool ADCInput::init(uint8_t newInput, uint8_t mode){
@@ -48,24 +52,28 @@ uint8_t ADCInput::getModeCount(){
 /*
  * Set ADC prescaler
  */
-void ADCInput::setPrescaler(uint8_t mode){
+bool ADCInput::setPrescaler(uint8_t mode){
     if (mode < ADCInput::getModeCount()){
-        curMode = mode;
         uint8_t prescaler = prescalers[mode];
         prescaler & 4 ? sbi(ADCSRA,ADPS2) : cbi(ADCSRA,ADPS2);
         prescaler & 2 ? sbi(ADCSRA,ADPS1) : cbi(ADCSRA,ADPS1);
         prescaler & 1 ? sbi(ADCSRA,ADPS0) : cbi(ADCSRA,ADPS0);
         sbi(ADCSRA, ADEN);
+        delay(10); // allow the ADC to settle
+    } else {
+        return false;
     }
-    delay(10); // allow the ADC to settle
+    return true;
 }
 
 /*
  * Configure ADC for given mode.
  */
 bool ADCInput::setMode(uint8_t mode){
-    ADCInput::setPrescaler(mode);
-    return 1;
+    if (ADCInput::setPrescaler(mode)){
+        curMode = mode;
+    }
+    return (curMode = mode);
 }
 
 /*
@@ -88,6 +96,31 @@ void ADCInput::readMulti(uint16_t *buffer, unsigned size){
         sbi(ADCSRA, ADIF);
     }
     cbi(ADCSRA, ADATE);  // Disable free running
+}
+
+/*
+ * Read internal reference voltage.
+ */
+uint16_t ADCInput::calibrateAREF(){
+    // reset ADC to default mode for highest precision.
+    setPrescaler(0);
+    read(); // allow the port to be configured (discard result)
+
+    ADMUX = (ADMUX & 0xf0) | 0x0e; // switch to reading the internal 1.1V reference
+
+    // wait for the reference input to stabilize
+    readFast();
+    delay(200);
+    uint16_t reference = readFast();
+
+    // reference should represent 1100mV
+    uint16_t rangemV = INTERNAL_REF_MV * ((1L<<bits)-1) / long(reference);
+
+    // set ADC to previous mode
+    setPrescaler(curMode);
+    read();
+
+    return rangemV;
 }
 
 /*
