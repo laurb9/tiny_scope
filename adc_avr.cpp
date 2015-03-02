@@ -27,7 +27,7 @@
 #if defined(ADCSRA) && defined(ADCL)
 
 // Actual voltage of Vbg (internal 1.1V ref) in mV. This is different from chip to chip.
-// = 5000*1100/VREFmeasured (with accurate multimeter). 3300*1100/VREFmeasured for 3.3V systems.
+// = VrefMeasured*1100/5.000 (with accurate multimeter). VrefMeasured*1100/3.300 for 3.3V systems.
 #define INTERNAL_REF_MV 1090
 
 const uint8_t ADCInput::prescalers[] = {7,6,5,4,3,2}; // 1:8MHz clock is out of ADC spec for 16MHz AVR
