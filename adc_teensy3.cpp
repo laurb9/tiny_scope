@@ -11,6 +11,11 @@
 #ifdef __MK20DX256__
 #include "adc_teensy3.h"
 
+// Actual voltage of internal 1.2V ref in mV. This is different from chip to chip.
+// = VRefMeasured*1200/3.3 for 3.3V systems.
+#define INTERNAL_REF_MV (3280*1200L/3300)
+
+#define INTERNAL_REF_PORT 39
 #define ADC_CLOCK_TO_SAMPLING 15
 
 static unsigned int averagingTable[] = {32, 16,  8,  4,  0, 0};
@@ -43,6 +48,25 @@ bool ADCInput::setMode(uint8_t mode=0){
     } else {
         return false;
     }
+}
+
+/*
+ * Read internal reference voltage.
+ */
+uint16_t ADCInput::calibrateAREF(){
+    // reset ADC to default mode for highest precision.
+    uint8_t oldMode = curMode;
+    setMode(0);
+    analogReadRes(16);
+    analogRead(INTERNAL_REF_PORT);
+    delay(200);
+    uint16_t rangemV = INTERNAL_REF_MV * ((1L<<16)-1) / analogRead(INTERNAL_REF_PORT);
+
+    // set ADC to previous mode
+    setMode(oldMode);
+    read();
+
+    return rangemV;
 }
 
 /*

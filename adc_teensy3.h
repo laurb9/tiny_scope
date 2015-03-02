@@ -35,6 +35,7 @@ public:
             *buffer++ = analogRead(input);
         }
     }
+    uint16_t calibrateAREF();
 };
 
 #endif /* ADC_TEENSY3_ */
