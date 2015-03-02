@@ -5,6 +5,7 @@ Features
 ========
 - Configurable ADC speed for sampling rates from 10KHz to 300KHz (on UNO)
 - Auto grid on time base from 2ms to 50us (on UNO)
+- Vmax calibration and 3.3-5V detection using internal reference
 - 0V auto trigger
 - Display minimum-maximum voltage of captured signal
 - Square waveforms are displayed properly
