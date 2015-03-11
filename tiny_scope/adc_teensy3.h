@@ -10,12 +10,15 @@
  */
 #ifndef ADC_TEENSY3_
 #define ADC_TEENSY3_
+#include <ADC.h>
 #include "adc.h"
 
 #define ADC_AREF_MV 3300
 
 class ADCInput : public ADCBase {
 public:
+    ADC *adc;
+    uint8_t curMode;
     uint8_t input;                           // analog input port
     uint8_t bits;                            // ADC resolution in bits
     bool init(uint8_t input=0, uint8_t mode=0);
@@ -25,15 +28,23 @@ public:
     uint32_t getSampleRate();  // Hz for information purposes only
 
     inline uint16_t read() __attribute__((always_inline)){
-        return analogRead(input);
+        adc->analogRead(input);
+        if (!adc->isContinuous()) adc->startContinuous(input);
+        while (!adc->isComplete());
+        return (uint16_t)adc->analogReadContinuous();
     }
     inline uint16_t readFast() __attribute__((always_inline)){
-        return analogRead(input);
+        if (!adc->isContinuous()) adc->startContinuous(input);
+        while (!adc->isComplete());
+        return (uint16_t)adc->analogReadContinuous();
     }
     inline void readMulti(uint16_t *buffer, unsigned size){
+        if (!adc->isContinuous()) adc->startContinuous(input);
         for (; size; size--){
-            *buffer++ = analogRead(input);
+            while (!adc->isComplete());
+            *buffer++ = (uint16_t)adc->analogReadContinuous();
         }
+        adc->stopContinuous(input);
     }
     uint16_t calibrateAREF();
 };
