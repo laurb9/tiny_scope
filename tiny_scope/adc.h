@@ -80,7 +80,7 @@ public:
     }
 };
 
-#ifdef __MK20DX256__
+#if defined(__MK20DX256__) || defined(__MKL26Z64__)
 #include "adc_teensy3.h"
 #elif defined(__AVR__) && defined(ADCSRA) && defined(ADCL)
 #include "adc_avr.h"

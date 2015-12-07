@@ -8,7 +8,7 @@
  * A copy of this license has been included with this distribution in the file LICENSE.
  *
  */
-#ifdef __MK20DX256__
+#if defined(__MK20DX256__) || defined(__MKL26Z64__)
 #include "adc_teensy3.h"
 
 // Actual voltage of internal 1.2V ref in mV. This is different from chip to chip.
@@ -107,4 +107,4 @@ uint32_t ADCInput::getSampleRate(){
     return ADCInput::getClock() / ADC_CLOCK_TO_SAMPLING;
 }
 
-#endif /* __MK20DX256__ */
+#endif /* defined(__MK20DX256__) || defined(__MKL26Z64__) */
