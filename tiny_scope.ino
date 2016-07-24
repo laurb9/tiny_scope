@@ -58,7 +58,7 @@ void displaySplash(){
     display.setTextColor(WHITE);
 
     display.setTextSize(2);
-    display.print(F("Tiny Scope"));
+    display.print(F("Tiny Scope\n"));
 
     display.setTextSize(1);
     display.printf(F("\nINPUT %d VREF "), capture.adc.input);
@@ -91,8 +91,8 @@ void setup(){
     display.display();
 
 #ifdef ENABLE_PWM
-    /* 
-     * set up PWM outputs for testing: 
+    /*
+     * set up PWM outputs for testing:
      * Read http://playground.arduino.cc/Code/PwmFrequency on influence on millis(), delay() etc
      * short: we should really only change 9 or 10 base freq
      * pins 3, 9, 10, and 11: base 31250Hz / 64 = 488Hz
@@ -117,7 +117,7 @@ void setup(){
 void setADCMode(){
     int adcMode = EEPROM.read(ADC_MODE_ADDR);
     unsigned count = 0;
-    
+
     if (digitalRead(MODE_BUTTON_PIN) == LOW){
         // Freeze display while button stays pressed
         while (digitalRead(MODE_BUTTON_PIN) == LOW){
