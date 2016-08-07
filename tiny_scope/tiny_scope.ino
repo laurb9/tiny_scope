@@ -14,7 +14,16 @@
 #include <Adafruit_GFX.h>
 #endif
 #include <Arduino.h>
+#if !defined(ARDUINO_SAMD_ZERO)
 #include <EEPROM.h>
+#else
+class {
+// fake EEPROM
+public:
+    int read(int addr){ return 0; };
+    void write(int addr, byte c){ };
+} EEPROM;
+#endif
 #include "adc.h"
 #include "scope.h"
 #include "capture.h"
@@ -27,7 +36,7 @@
 #define ADC_PIN 1
 
 // Which digital input the button is on - use to cycle through all the ADC modes
-#define MODE_BUTTON_PIN 7
+#define MODE_BUTTON_PIN 6
 
 // ADC reference voltage (mV). Default 5000 for AVR 5V, 3300 for Teensy3
 // Change this if AREF is connected to a different voltage reference

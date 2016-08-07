@@ -85,7 +85,11 @@ public:
 #elif defined(__AVR__) && defined(ADCSRA) && defined(ADCL)
 #include "adc_avr.h"
 #else
+#if defined(ARDUINO_SAMD_ZERO)
+#define ADC_AREF_MV 3300
+#else
 #define ADC_AREF_MV 5000
+#endif
 class ADCInput : public ADCBase {
 };
 #endif
