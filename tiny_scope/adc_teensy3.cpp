@@ -19,25 +19,25 @@
 #define ADC_CLOCK_TO_SAMPLING 15
 
 typedef struct {
-    uint8_t samplingSpeed;
-    uint8_t conversionSpeed;
+    ADC_SAMPLING_SPEED samplingSpeed;
+    ADC_CONVERSION_SPEED conversionSpeed;
     uint8_t resolution;
     uint8_t averaging;
 } adcSettings_t;
 
 static adcSettings_t settings[] = {
-//      {      ADC_LOW_SPEED,       ADC_LOW_SPEED, 16, 32},  //    10ms   2K
-//      {      ADC_LOW_SPEED,       ADC_LOW_SPEED, 12, 16},  //     5ms   4K
-        {      ADC_LOW_SPEED,       ADC_LOW_SPEED, 12,  8},  //     2ms   9K
-        {      ADC_LOW_SPEED,       ADC_MED_SPEED, 12,  16}, //     1ms  18K
-        {      ADC_MED_SPEED,       ADC_MED_SPEED, 12,  16}, //     1ms  22K
-        {      ADC_MED_SPEED,       ADC_MED_SPEED, 12,  8},  //   0.5ms  43K
-        {      ADC_MED_SPEED,       ADC_MED_SPEED, 12,  4},  //   0.2ms  87K
-        {     ADC_HIGH_SPEED,      ADC_HIGH_SPEED, 12,  4},  //   0.1ms 187K
-        {      ADC_MED_SPEED,       ADC_MED_SPEED, 12,  0},  //    50us 345K
-        {     ADC_HIGH_SPEED, ADC_VERY_HIGH_SPEED, 10,  0},  //    20us 749K
-        {ADC_VERY_HIGH_SPEED, ADC_VERY_HIGH_SPEED, 10,  0},  //    20us 815K
-        {ADC_VERY_HIGH_SPEED, ADC_VERY_HIGH_SPEED,  8,  0}   //    20us 941K (1.2Msps @ 48,96MHz)
+//      {      ADC_SAMPLING_SPEED::LOW_SPEED,       ADC_CONVERSION_SPEED::LOW_SPEED, 16, 32},  //    10ms   2K
+//      {      ADC_SAMPLING_SPEED::LOW_SPEED,       ADC_CONVERSION_SPEED::LOW_SPEED, 12, 16},  //     5ms   4K
+        {      ADC_SAMPLING_SPEED::LOW_SPEED,       ADC_CONVERSION_SPEED::LOW_SPEED, 12,  8},  //     2ms   9K
+        {      ADC_SAMPLING_SPEED::LOW_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  16}, //     1ms  18K
+        {      ADC_SAMPLING_SPEED::MED_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  16}, //     1ms  22K
+        {      ADC_SAMPLING_SPEED::MED_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  8},  //   0.5ms  43K
+        {      ADC_SAMPLING_SPEED::MED_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  4},  //   0.2ms  87K
+        {     ADC_SAMPLING_SPEED::HIGH_SPEED,      ADC_CONVERSION_SPEED::HIGH_SPEED, 12,  4},  //   0.1ms 187K
+        {      ADC_SAMPLING_SPEED::MED_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  0},  //    50us 345K
+        {     ADC_SAMPLING_SPEED::HIGH_SPEED, ADC_CONVERSION_SPEED::VERY_HIGH_SPEED, 10,  0},  //    20us 749K
+        {ADC_SAMPLING_SPEED::VERY_HIGH_SPEED, ADC_CONVERSION_SPEED::VERY_HIGH_SPEED, 10,  0},  //    20us 815K
+        {ADC_SAMPLING_SPEED::VERY_HIGH_SPEED, ADC_CONVERSION_SPEED::VERY_HIGH_SPEED,  8,  0}   //    20us 941K (1.2Msps @ 48,96MHz)
 };
 
 bool ADCInput::init(uint8_t newInput, uint8_t mode)
