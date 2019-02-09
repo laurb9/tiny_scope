@@ -1,7 +1,6 @@
-# Eclipse project file
-.project
-
-# Object files
+# Compiled Object files
+*.slo
+*.lo
 *.o
 *.ko
 *.obj
@@ -11,22 +10,39 @@
 *.gch
 *.pch
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
+# Compiled Dynamic libraries
 *.so
 *.so.*
 *.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
 
 # Executables
 *.exe
 *.out
 *.app
-*.i*86
-*.x86_64
+
+# Eclipse
+.*project
+
+# VScode
+.vscode
+
+# PyCharm/Jetbrains editors
+.idea
+
+# Mac
+.DS_Store
+
+# Arduino
 *.hex
+*.bin
+.arduino

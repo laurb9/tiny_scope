@@ -1,0 +1,18 @@
+language: minimal
+git:
+  depth: false
+addons:
+  apt:
+    packages:
+    - python
+env:
+  matrix:
+    - TARGET=arduino:avr:uno
+before_install:
+  - make setup
+install: true
+script:
+  - make all
+cache:
+  directories:
+    - .arduino
