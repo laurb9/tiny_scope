@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/laurb9/tiny_scope.svg?branch=master)](https://travis-ci.com/laurb9/tiny_scope)
+
 Tiny Scope for Arduino
 ======================
 
