@@ -39,7 +39,7 @@ bool ADCInput::init(uint8_t newInput, uint8_t mode){
     pinMode(input, INPUT);
     if (input <= 5)
         sbi(DIDR0, 1 << input); // Digital input buffer disable (reduce power consumption)
-    ADCInput::setMode(mode);
+    return ADCInput::setMode(mode);
 }
 
 /*

@@ -12,8 +12,9 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>
 
-#define SCREEN_WIDTH  SSD1306_LCDWIDTH
-#define SCREEN_HEIGHT SSD1306_LCDHEIGHT
+// Display geometry (SSD1306 128x64 OLED)
+#define SCREEN_WIDTH  128
+#define SCREEN_HEIGHT 64
 
 /*
  * SSD1306 class with printf() functionality.
@@ -21,9 +22,9 @@
  */
 class Display : public Adafruit_SSD1306 {
 public:
-    Display(int8_t SID, int8_t SCLK, int8_t DC, int8_t RST, int8_t CS);
-    Display(int8_t DC, int8_t RST, int8_t CS);
-    Display(int8_t RST);
+    Display(int8_t SID, int8_t SCLK, int8_t DC, int8_t RST, int8_t CS); // software SPI
+    Display(int8_t DC, int8_t RST, int8_t CS);                          // hardware SPI
+    Display(int8_t RST);                                                // I2C
     void clearDisplay();
     int printf(const char *format, ...);
     void setTextCursor(uint8_t row, uint8_t col);
