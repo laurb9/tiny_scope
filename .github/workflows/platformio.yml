@@ -48,6 +48,9 @@ jobs:
       - name: Install simavr
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends simavr
-      - name: Run firmware under simavr
+          sudo apt-get install -y --no-install-recommends \
+            simavr libsimavr-dev libelf-dev gcc
+      - name: Run firmware under simavr (serial trace)
         run: make sim-test
+      - name: Run firmware under simavr (OLED framebuffer)
+        run: make sim-display-test

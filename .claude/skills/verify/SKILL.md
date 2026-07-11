@@ -36,13 +36,18 @@ pio run                        # if platformio.ini exists, all default envs
 ## 3. simavr
 
 ```bash
-make sim-test           # run the firmware on an emulated ATmega328P, compare to baseline
-make sim-test-update    # regenerate test/uno-simavr.txt after intentional trace changes
+make sim-test                   # run the firmware on an emulated ATmega328P, compare serial trace to baseline
+make sim-test-update            # regenerate test/uno-simavr.txt after intentional trace changes
+make sim-display-test           # render the emulated SSD1306 framebuffer, compare pixels to baseline
+make sim-display-test-update    # regenerate test/uno-display.txt after intentional display changes
 ```
 
-This catches boot crashes and memory exhaustion that compilation cannot (it already
-caught a display-buffer OOM and an out-of-bounds ADC mode). Requires simavr and
-PlatformIO (both in the devcontainer).
+`sim-test` catches boot crashes and memory exhaustion that compilation cannot (it
+already caught a display-buffer OOM and an out-of-bounds ADC mode). `sim-display-test`
+attaches a virtual SSD1306 over TWI and compares the rendered VRAM (ASCII art)
+pixel-for-pixel against `test/uno-display.txt`, catching rendering regressions the serial
+trace misses. Both require PlatformIO and simavr; `sim-display-test` also needs
+`libsimavr-dev`, `libelf-dev`, and `gcc` (all in the devcontainer).
 
 ## 4. Hardware caveat
 

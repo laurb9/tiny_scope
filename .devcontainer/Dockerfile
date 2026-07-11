@@ -4,9 +4,12 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
     make \
     curl \
+    gcc \
     python3-pip \
     python3-venv \
     simavr \
+    libsimavr-dev \
+    libelf-dev \
     udev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 

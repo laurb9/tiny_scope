@@ -30,7 +30,10 @@ tiny_scope/
 ├── .devcontainer/          # Dev container: arduino-cli, PlatformIO, simavr
 ├── .claude/skills/         # Project skills for agent work (building, verify)
 ├── .github/workflows/      # CI: arduino.yml + platformio.yml build matrices + simavr
-├── test/                   # simavr smoke test: runner script + golden baseline
+├── test/                   # simavr tests:
+│                           #   simavr-run.sh + uno-simavr.txt (serial smoke test)
+│                           #   sim-display-run.sh + uno-display.txt (OLED render test)
+│                           #   sim_display/ (render runner + vendored GPL SSD1306 part)
 ├── Makefile                # arduino-cli build automation
 ├── arduino-cli.yaml        # arduino-cli config (board indexes, .arduino dirs)
 ├── platformio.ini          # PlatformIO envs: uno, teensy31, teensylc,
@@ -98,10 +101,27 @@ buffers) and runs it under simavr via `test/simavr-run.sh`. The comparison strip
 so value drift doesn't fail the test but OK/FAIL/YES/NO verdict flips do. The trace code
 in `tiny_scope.ino` is compiled out of production builds.
 
+### simavr display test
+
+```bash
+make sim-display-test          # render the emulated OLED framebuffer, compare to golden
+make sim-display-test-update   # regenerate test/uno-display.txt after intentional changes
+```
+
+Runs the same `uno_sim` firmware under simavr with a **virtual SSD1306 OLED attached
+over TWI**, waits for the `sim: TESTS COMPLETE` marker, then dumps the display VRAM as
+ASCII art (64x128, `#`/`.`) and compares it **pixel-for-pixel** (no digit stripping)
+against `test/uno-display.txt`. This catches rendering regressions the serial smoke test
+cannot. The runner is `test/sim_display/sim_display.c`; it links `ssd1306_virt.c/.h`,
+**vendored GPLv3 from simavr** and used as test tooling only (never in the firmware) —
+see `test/sim_display/README.md`. Needs `libsimavr-dev`, `libelf-dev`, and `gcc` (all in
+the devcontainer); the Makefile builds the host binary.
+
 ### Verification expectations
 
 Before declaring a change done, build for **at least** `arduino:avr:uno` and one ARM
-target, and run `make sim-test` — see `.claude/skills/verify`. `--warnings all` is on; do not introduce new
+target, and run `make sim-test` and `make sim-display-test` — see `.claude/skills/verify`.
+`--warnings all` is on; do not introduce new
 warnings. Display/ADC behavior can only be fully confirmed on hardware; call out
 runtime-affecting changes (display init, ADC timing, pin changes) in the PR description
 so the maintainer can flash-test.

@@ -50,3 +50,6 @@ build/
 
 # PlatformIO
 .pio/
+
+# simavr display test host binary (built by `make sim-display-test`)
+test/sim_display/sim_display
