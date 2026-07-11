@@ -71,4 +71,12 @@ setup: $(ARDUINO_DIR)/arduino-cli
 setup-pio: # Install PlatformIO and dependencies
 	pip3 install -U platformio intelhex
 
-.PHONY: clean %.hex all core setup setup-pio
+sim-test: # Run the firmware under simavr and compare to the golden baseline
+	pio run -e uno_sim
+	test/simavr-run.sh
+
+sim-test-update: # Run under simavr and regenerate the golden baseline
+	pio run -e uno_sim
+	test/simavr-run.sh --update
+
+.PHONY: clean %.hex all core setup setup-pio sim-test sim-test-update

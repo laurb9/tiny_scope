@@ -29,7 +29,8 @@ tiny_scope/
 │   └── scope.h/cpp         # Scope: waveform/grid/voltmeter rendering
 ├── .devcontainer/          # Dev container: arduino-cli, PlatformIO, simavr
 ├── .claude/skills/         # Project skills for agent work (building, verify)
-├── .github/workflows/      # CI: arduino.yml + platformio.yml build matrices
+├── .github/workflows/      # CI: arduino.yml + platformio.yml build matrices + simavr
+├── test/                   # simavr smoke test: runner script + golden baseline
 ├── Makefile                # arduino-cli build automation
 ├── arduino-cli.yaml        # arduino-cli config (board indexes, .arduino dirs)
 ├── platformio.ini          # PlatformIO envs: uno, teensy31, teensylc,
@@ -85,10 +86,22 @@ and simavr preinstalled. Open the repo in VS Code and "Reopen in Container", or 
 and run `.devcontainer/Dockerfile` manually. Always prefer building/testing inside the
 container for reproducibility.
 
+### simavr smoke test
+
+```bash
+make sim-test          # run firmware on an emulated ATmega328P, compare trace to golden
+make sim-test-update   # regenerate test/uno-simavr.txt after intentional changes
+```
+
+Builds the `uno_sim` PlatformIO env (`SIMAVR_TEST` serial trace, short splash, smaller
+buffers) and runs it under simavr via `test/simavr-run.sh`. The comparison strips digits,
+so value drift doesn't fail the test but OK/FAIL/YES/NO verdict flips do. The trace code
+in `tiny_scope.ino` is compiled out of production builds.
+
 ### Verification expectations
 
 Before declaring a change done, build for **at least** `arduino:avr:uno` and one ARM
-target — see `.claude/skills/verify`. `--warnings all` is on; do not introduce new
+target, and run `make sim-test` — see `.claude/skills/verify`. `--warnings all` is on; do not introduce new
 warnings. Display/ADC behavior can only be fully confirmed on hardware; call out
 runtime-affecting changes (display init, ADC timing, pin changes) in the PR description
 so the maintainer can flash-test.
