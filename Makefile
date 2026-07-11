@@ -1,59 +1,74 @@
 # Default build architecture and board
 TARGET ?= arduino:avr:uno
+CORE = $(shell echo $(TARGET) | cut -d: -f1,2)
 
 # Libraries needed for this application
 LIBS ?= "Adafruit SSD1306" "Adafruit GFX Library"
 
-# Default list of cores to install with `make setup`
-CORES ?= arduino:avr adafruit:samd esp8266:esp8266 esp32:esp32
-
-# Where to save the Arduino support files, this should match what is in .cli-config.yml
+# Where to save the Arduino support files, this should match what is in arduino-cli.yaml
 ARDUINO_DIR ?= .arduino
 
 default:
 	#################################################################################################
-	# Initial setup: make .arduino/arduino-cli setup
+	# Initial setup: make setup
 	#
-	# Build all the examples: make all TARGET=adafruit:samd:adafruit_feather_m0
+	# Build the sketch: make all TARGET=arduino:avr:uno
+	# Other targets: teensy:avr:teensy31, teensy:avr:teensyLC, adafruit:samd:adafruit_feather_m0
 	#
-	# Install more cores: make setup CORES=arduino:samd
-	# (edit .cli-config.yml and add repository if needed)
+	# The core for TARGET is installed automatically on build.
+	# (edit arduino-cli.yaml and add its board index repository if needed)
 	#################################################################################################
 
-ARDUINO_CLI_URL = http://downloads.arduino.cc/arduino-cli/arduino-cli-latest-linux64.tar.bz2
-ARDUINO_CLI ?= $(ARDUINO_DIR)/arduino-cli --config-file .cli-config.yml
+# See https://arduino.github.io/arduino-cli/installation/
+# Detect OS and architecture and use the appropriate arduino-cli build
+OS := $(shell uname -s)
+ARCH := $(shell uname -m)
+ifeq ($(OS),Darwin)
+	ifeq ($(ARCH),arm64)
+		ARDUINO_CLI_URL = https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_ARM64.tar.gz
+	else
+		ARDUINO_CLI_URL = https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_64bit.tar.gz
+	endif
+else ifeq ($(ARCH),aarch64)
+	ARDUINO_CLI_URL = https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_ARM64.tar.gz
+else
+	ARDUINO_CLI_URL = https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
+endif
+ARDUINO_CLI ?= $(ARDUINO_DIR)/arduino-cli --config-file arduino-cli.yaml
 
-all: # Build all example sketches
+all: # Build all sketches
 all: tiny_scope.hex
+	ls -l build
 
 %.hex: # Generic rule for compiling sketch to uploadable hex file
-%.hex: tiny_scope/%.ino
-	$(ARDUINO_CLI) compile --warnings all --fqbn $(TARGET) $< --output $@
-	ls -l $@*
+%.hex: tiny_scope/%.ino core
+	$(ARDUINO_CLI) compile --warnings all --fqbn $(TARGET) --output-dir build tiny_scope
 
 # Remove built objects
 clean:
-	rm -fv *.{hex,elf}*
+	rm -rfv build
+
+core: $(ARDUINO_DIR)/arduino-cli
+	$(ARDUINO_CLI) core install $(CORE)
 
 $(ARDUINO_DIR)/arduino-cli:  # Download and install arduino-cli
 $(ARDUINO_DIR)/arduino-cli:
 	mkdir -p $(ARDUINO_DIR)
-	cd $(ARDUINO_DIR)
-	curl -s $(ARDUINO_CLI_URL) \
-	| tar xfj - -O -C $(ARDUINO_DIR) \
-	> $@
+	curl -L -s $(ARDUINO_CLI_URL) \
+	| tar xfz - -C $(ARDUINO_DIR) arduino-cli
 	chmod 755 $@
+	$(ARDUINO_CLI) version
 
 setup: # Configure cores and libraries for arduino-cli (which it will download if missing)
 setup: $(ARDUINO_DIR)/arduino-cli
-	mkdir -p $(ARDUINO_DIR)/libraries
-	ln -sf $(CURDIR) $(ARDUINO_DIR)/libraries/
 	$(ARDUINO_CLI) config dump
 	$(ARDUINO_CLI) core update-index
-	$(ARDUINO_CLI) core install $(CORES)
 	$(ARDUINO_CLI) core list
 	for lib in $(LIBS); do \
-		$(ARDUINO_CLI) lib install "$${lib}" || true ; \
+		$(ARDUINO_CLI) lib install "$${lib}" || exit 1 ; \
 	done
 
-.PHONY: clean %.hex all setup
+setup-pio: # Install PlatformIO and dependencies
+	pip3 install -U platformio intelhex
+
+.PHONY: clean %.hex all core setup setup-pio

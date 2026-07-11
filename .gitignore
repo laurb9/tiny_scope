@@ -46,3 +46,7 @@
 *.hex
 *.bin
 .arduino
+build/
+
+# PlatformIO
+.pio/

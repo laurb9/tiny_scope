@@ -1,0 +1,12 @@
+directories:
+  data: .arduino
+  downloads: .arduino/staging
+  user: .arduino
+board_manager:
+  additional_urls:
+    - https://arduino.esp8266.com/stable/package_esp8266com_index.json
+    - https://espressif.github.io/arduino-esp32/package_esp32_index.json
+    - https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
+    - https://www.pjrc.com/teensy/package_teensy_index.json
+telemetry:
+  enabled: false
