@@ -59,7 +59,7 @@ Scope                    # scope.h - renders Capture on Display (graph or voltme
 - `master` is the only branch that matters going forward; it builds all targets from one
   tree using per-platform `#if` guards.
 - `teensy` and `feather_m0` are **historical** target branches from before arduino-cli
-  could resolve per-board libraries; their deltas are being folded into master. Do not
+  could resolve per-board libraries; their deltas have been folded into master. Do not
   base new work on them. Other old branches (`fft`, `low_power`, `freeram`, `edison`)
   are experiments, also inactive.
 
@@ -120,13 +120,16 @@ so the maintainer can flash-test.
 
 > **Critical**: The primary target is an ATmega328P: 2KB RAM, 32KB flash, 16 MHz, no FPU.
 
-- The capture buffer is `SCREEN_WIDTH` (128) uint16_t samples — RAM is nearly full on
-  AVR; avoid adding buffers or `String`, prefer stack-free `F()` flash strings
+- RAM on the Uno is essentially full: 1KB SSD1306 framebuffer (malloc'd in
+  `display.begin()`, which must stay first in `setup()`) + 256B capture buffer
+  (`CAPTURE_SAMPLES`, default one per pixel) + ~490B globals leaves ~270B of stack.
+  Avoid adding buffers or `String`; prefer stack-free `F()` flash strings. If either
+  allocation starts failing, `make sim-test` will catch it before hardware does.
 - `ADCInput::read()/readFast()/readMulti()` are the sampling hot path: keep them
   inline, integer-only, and branch-light; sampling jitter shows up directly as
   waveform distortion
 - Use `PROGMEM`/`F()` for constant data on AVR
-- No dynamic allocation outside the single `capture.init()` buffer
+- No dynamic allocation outside the display framebuffer and `capture.init()` buffer
 
 ## Commit & Pull Request Guidelines
 

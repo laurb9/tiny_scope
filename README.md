@@ -31,8 +31,20 @@ Voltmeter mode is automatically switched on with a steady voltage signal (when i
 <img src="http://wotevah.com/tiny_scope/images/voltmeter_3.jpg" 
      width="162" alt="Voltmeter mode">
 
-Requires: <a href="http://arduino.cc/en/Main/ArduinoBoardUno">Arduino UNO R3</a> or <a href="http://www.pjrc.com/teensy/index.html">Teensy USB</a> board
-and <a href="http://www.adafruit.com/products/326">Monochrome 0.96" 128x64 OLED graphic display</a> (SSD1306 driver)
+Requires one of the boards below and a <a href="https://www.adafruit.com/product/326">Monochrome 0.96" 128x64 OLED graphic display</a> (SSD1306 driver, I2C).
+
+Supported boards
+================
+All boards build from this branch (`master`); the old `teensy` and `feather_m0`
+branches are historical and no longer needed.
+
+| Board                     | Build target                        | Notes                                    |
+|---------------------------|-------------------------------------|------------------------------------------|
+| Arduino UNO R3 / ATmega328| `arduino:avr:uno` / `uno`           | tuned ADC driver, 10-300KHz sampling      |
+| Teensy 3.1/3.2            | `teensy:avr:teensy31` / `teensy31`  | tuned ADC driver (pedvide ADC), fastest   |
+| Teensy LC                 | `teensy:avr:teensyLC` / `teensylc`  | tuned ADC driver (pedvide ADC)            |
+| Adafruit Feather M0       | `adafruit:samd:adafruit_feather_m0` | portable ADC, no EEPROM (mode not saved), button on D6 |
+| ESP32                     | `esp32dev` (PlatformIO)             | experimental: compiles, untested on hardware, portable ADC |
 
 Connections
 ===========
@@ -41,7 +53,7 @@ Connections
 - OLED SCL   - A5 or SCL (Teensy SCL0 pin 19)
 - OLED SDA   - A4 or SDA (Teensy SDA0 pin 18)
 - PROBE WIRE - A1 (defined in tiny_scope.ino) (Teensy pin 15)
-- BUTTON     - D7 button to GND
+- BUTTON     - D7 button to GND (D6 on Feather M0)
 
 Testing
 =======
@@ -51,6 +63,9 @@ Testing
 - A1 to D5 should display a square wave (PWM) with >1ms period and >0.2ms pulse
 - Momentary (<0.5s) push on D7 switch cycles through available sampling speeds
 - Long >0.5s push on D7 freezes display.
+
+Without hardware, `make sim-test` boots the UNO firmware on an emulated
+ATmega328P (simavr) and checks the boot/capture pipeline against a baseline.
 
 Entire project
 ==============
@@ -68,10 +83,9 @@ Parts
     <a href="https://www.adafruit.com/products/2000">Arduino Pro Trinket</a> or
     <a href="http://www.adafruit.com/category/17?&main_page=index&cPath=17">Other Arduino Atmega328 board</a>,
     or 
-  - <a href="http://www.pjrc.com/teensy/index.html">Teensy 3</a> (less expensive and more powerful)
-- <a href="http://www.amazon.com/Yellow-Serial-128X64-Display-Arduino/dp/B00O2LLT30">0.96" OLED display</a> with SSD1306 and I2C mode (that's what I tried. SPI mode is also supported by the Adafruit library but wiring is different). <a href="http://www.adafruit.com/products/938">Many stores</a> sell these and in different colors.
-- <a href="http://arduino.cc/en/Main/Software">Arduino IDE</a>
-- type B USB cable, few jumper wires
+  - <a href="https://www.pjrc.com/teensy/index.html">Teensy</a>, <a href="https://www.adafruit.com/product/2772">Adafruit Feather M0</a>, or an ESP32 board (experimental)
+- 0.96" OLED display with SSD1306 and I2C mode (SPI mode is also supported by the Adafruit library but wiring is different). <a href="https://www.adafruit.com/product/938">Many stores</a> sell these and in different colors.
+- USB cable, few jumper wires
 
 Building
 ========
