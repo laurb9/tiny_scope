@@ -31,6 +31,8 @@ tiny_scope/
 ├── .claude/skills/         # Project skills for agent work (building, verify)
 ├── Makefile                # arduino-cli build automation
 ├── arduino-cli.yaml        # arduino-cli config (board indexes, .arduino dirs)
+├── platformio.ini          # PlatformIO envs: uno, teensy31, teensylc,
+│                           #   adafruit_feather_m0, esp32dev
 └── README.md               # User-facing docs, wiring, parts list
 ```
 

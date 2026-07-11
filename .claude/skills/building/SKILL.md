@@ -27,12 +27,15 @@ make all TARGET=adafruit:samd:adafruit_feather_m0
 
 ## PlatformIO
 
-If `platformio.ini` exists at the repo root:
-
 ```bash
-pio run                # all default envs
-pio run -e uno         # single env; see platformio.ini for the env list
+pio run                # all default envs: uno, teensy31, teensylc,
+                       #   adafruit_feather_m0, esp32dev
+pio run -e uno         # single env
 ```
+
+`lib_ldf_mode = chain+` is required: it makes the dependency finder evaluate
+preprocessor conditionals so the Teensy-only `<ADC.h>` include doesn't leak into
+other targets. Artifacts land in `.pio/build/<env>/`.
 
 ## Where to build
 
