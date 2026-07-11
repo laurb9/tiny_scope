@@ -67,12 +67,6 @@ bool ADCInput::setMode(uint8_t mode=0){
         adc->adc0->setResolution(bits);
         adc->adc0->setConversionSpeed(s.conversionSpeed);
         adc->adc0->setSamplingSpeed(s.samplingSpeed);
-#ifdef ADC_DUAL_ADCS
-        adc->adc1->setAveraging(s.averaging);
-        adc->adc1->setResolution(bits);
-        adc->adc1->setConversionSpeed(s.conversionSpeed);
-        adc->adc1->setSamplingSpeed(s.samplingSpeed);
-#endif
         return true;
     } else {
         return false;
@@ -87,9 +81,6 @@ uint16_t ADCInput::calibrateAREF(){
     //uint8_t oldMode = curMode;
     //setMode(0);
     adc->adc0->setResolution(16);
-#ifdef ADC_DUAL_ADCS
-    adc->adc1->setResolution(16);
-#endif
     adc->analogRead(INTERNAL_REF_PORT);
     delay(200);
     uint16_t rangemV = INTERNAL_REF_MV * adc->adc0->getMaxValue() / adc->analogRead(INTERNAL_REF_PORT);
