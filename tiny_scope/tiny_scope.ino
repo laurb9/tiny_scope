@@ -7,14 +7,17 @@
  * This file may be redistributed under the terms of the MIT license.
  * A copy of this license has been included with this distribution in the file LICENSE.
  */
-#if 0 /* add all necessary libs here or they will not be found on the path */
-#include <SPI.h>
-#include <Wire.h>
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_GFX.h>
-#endif
 #include <Arduino.h>
+#if defined(ARDUINO_ARCH_SAMD)
+// SAMD has no EEPROM: last used ADC mode is not persisted across resets
+class {
+public:
+    int read(int){ return 0; };
+    void write(int, byte){ };
+} EEPROM;
+#else
 #include <EEPROM.h>
+#endif
 #include "adc.h"
 #include "scope.h"
 #include "capture.h"
@@ -27,14 +30,17 @@
 #define ADC_PIN 1
 
 // Which digital input the button is on - use to cycle through all the ADC modes
+#if defined(ARDUINO_ARCH_SAMD)
+#define MODE_BUTTON_PIN 6
+#else
 #define MODE_BUTTON_PIN 7
+#endif
 
-// ADC reference voltage (mV). Default 5000 for AVR 5V, 3300 for Teensy3
+// ADC reference voltage (mV). Default 5000 for AVR 5V, 3300 for 3.3V boards
 // Change this if AREF is connected to a different voltage reference
 #define AREF_MV ADC_AREF_MV
 
-// Address of I2C OLED display. If screen looks scaled edit Adafruit_SSD1306.h
-// and pick SSD1306_128_64 or SSD1306_128_32 that matches display type.
+// Address of I2C OLED display (128x64 SSD1306, see display.h)
 #define DISPLAY_I2C_ADDRESS 0x3C
 
 // Enable PWM outputs on pins 9 and 5 for testing (see setup()). Comment out to disable.
@@ -58,7 +64,7 @@ void displaySplash(){
     display.setTextColor(WHITE);
 
     display.setTextSize(2);
-    display.print(F("Tiny Scope"));
+    display.print(F("Tiny Scope\n"));
 
     display.setTextSize(1);
     display.printf(F("\nINPUT %d VREF "), capture.adc.input);

@@ -80,12 +80,17 @@ public:
     }
 };
 
-#ifdef __MK20DX256__
+#if defined(__MK20DX256__) || defined(__MKL26Z64__)
 #include "adc_teensy3.h"
 #elif defined(__AVR__) && defined(ADCSRA) && defined(ADCL)
 #include "adc_avr.h"
 #else
+// Portable analogRead() fallback for boards without a tuned ADC driver
+#if defined(ARDUINO_ARCH_SAMD) || defined(ESP32)
+#define ADC_AREF_MV 3300
+#else
 #define ADC_AREF_MV 5000
+#endif
 class ADCInput : public ADCBase {
 };
 #endif

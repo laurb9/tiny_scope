@@ -13,13 +13,13 @@
 #define CHR_WIDTH 6
 
 Display::Display(int8_t SID, int8_t SCLK, int8_t DC, int8_t RST, int8_t CS)
-    :Adafruit_SSD1306(SID, SCLK, DC, RST, CS)
+    :Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, SID, SCLK, DC, RST, CS)
 {};
 Display::Display(int8_t DC, int8_t RST, int8_t CS)
-    :Adafruit_SSD1306(DC, RST, CS)
+    :Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &SPI, DC, RST, CS)
 {};
 Display::Display(int8_t RST)
-    :Adafruit_SSD1306(RST)
+    :Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, RST)
 {};
 
 void Display::clearDisplay(){
@@ -29,9 +29,9 @@ void Display::clearDisplay(){
 
 // from http://playground.arduino.cc/Main/Printf
 #include <stdarg.h>
-#define PRINTF_BUF 32 // everything we ever print should fit in here.
+#define DISPLAY_PRINTF_BUF 32 // everything we ever print should fit in here.
 int Display::printf(const char *format, ...){
-    char buf[PRINTF_BUF];
+    char buf[DISPLAY_PRINTF_BUF];
     va_list ap;
     va_start(ap, format);
     vsnprintf(buf, sizeof(buf), format, ap);
@@ -42,7 +42,7 @@ int Display::printf(const char *format, ...){
 
 #ifdef F // F() macro is available
 int Display::printf(const __FlashStringHelper *format, ...){
-    char buf[PRINTF_BUF];
+    char buf[DISPLAY_PRINTF_BUF];
     va_list ap;
     va_start(ap, format);
 #ifdef __AVR__

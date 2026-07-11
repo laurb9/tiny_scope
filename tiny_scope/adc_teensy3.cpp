@@ -8,7 +8,7 @@
  * A copy of this license has been included with this distribution in the file LICENSE.
  *
  */
-#ifdef __MK20DX256__
+#if defined(__MK20DX256__) || defined(__MKL26Z64__)
 #include "adc_teensy3.h"
 
 // Actual voltage of internal 1.2V ref in mV. This is different from chip to chip.
@@ -18,11 +18,31 @@
 #define INTERNAL_REF_PORT 39
 #define ADC_CLOCK_TO_SAMPLING 15
 
-static unsigned int averagingTable[] = {32, 16,  8,  4,  0, 0};
-static unsigned int adcBits[]        = {12, 12, 10, 10, 10, 8};
+typedef struct {
+    ADC_SAMPLING_SPEED samplingSpeed;
+    ADC_CONVERSION_SPEED conversionSpeed;
+    uint8_t resolution;
+    uint8_t averaging;
+} adcSettings_t;
+
+static adcSettings_t settings[] = {
+//      {      ADC_SAMPLING_SPEED::LOW_SPEED,       ADC_CONVERSION_SPEED::LOW_SPEED, 16, 32},  //    10ms   2K
+//      {      ADC_SAMPLING_SPEED::LOW_SPEED,       ADC_CONVERSION_SPEED::LOW_SPEED, 12, 16},  //     5ms   4K
+        {      ADC_SAMPLING_SPEED::LOW_SPEED,       ADC_CONVERSION_SPEED::LOW_SPEED, 12,  8},  //     2ms   9K
+        {      ADC_SAMPLING_SPEED::LOW_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  16}, //     1ms  18K
+        {      ADC_SAMPLING_SPEED::MED_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  16}, //     1ms  22K
+        {      ADC_SAMPLING_SPEED::MED_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  8},  //   0.5ms  43K
+        {      ADC_SAMPLING_SPEED::MED_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  4},  //   0.2ms  87K
+        {     ADC_SAMPLING_SPEED::HIGH_SPEED,      ADC_CONVERSION_SPEED::HIGH_SPEED, 12,  4},  //   0.1ms 187K
+        {      ADC_SAMPLING_SPEED::MED_SPEED,       ADC_CONVERSION_SPEED::MED_SPEED, 12,  0},  //    50us 345K
+        {     ADC_SAMPLING_SPEED::HIGH_SPEED, ADC_CONVERSION_SPEED::VERY_HIGH_SPEED, 10,  0},  //    20us 749K
+        {ADC_SAMPLING_SPEED::VERY_HIGH_SPEED, ADC_CONVERSION_SPEED::VERY_HIGH_SPEED, 10,  0},  //    20us 815K
+        {ADC_SAMPLING_SPEED::VERY_HIGH_SPEED, ADC_CONVERSION_SPEED::VERY_HIGH_SPEED,  8,  0}   //    20us 941K (1.2Msps @ 48,96MHz)
+};
 
 bool ADCInput::init(uint8_t newInput, uint8_t mode)
 {
+    adc = new ADC();
     input = newInput;
     pinMode(input, INPUT);
     return setMode(mode);
@@ -32,18 +52,27 @@ bool ADCInput::init(uint8_t newInput, uint8_t mode)
  * Get the number of
  */
 uint8_t ADCInput::getModeCount(){
-    return sizeof(averagingTable)/sizeof(*averagingTable);
+    return sizeof(settings)/sizeof(adcSettings_t);
 }
 
 /*
  * Configure ADC for given mode.
  */
 bool ADCInput::setMode(uint8_t mode=0){
-    if (mode < ADCInput::getModeCount()){
+    if (mode < getModeCount()){
         curMode = mode;
-        bits = adcBits[mode];
-        analogReadRes(bits);
-        analogReadAveraging(averagingTable[mode]);
+        adcSettings_t s = settings[mode];
+        bits = s.resolution;
+        adc->adc0->setAveraging(s.averaging);
+        adc->adc0->setResolution(bits);
+        adc->adc0->setConversionSpeed(s.conversionSpeed);
+        adc->adc0->setSamplingSpeed(s.samplingSpeed);
+#ifdef ADC_DUAL_ADCS
+        adc->adc1->setAveraging(s.averaging);
+        adc->adc1->setResolution(bits);
+        adc->adc1->setConversionSpeed(s.conversionSpeed);
+        adc->adc1->setSamplingSpeed(s.samplingSpeed);
+#endif
         return true;
     } else {
         return false;
@@ -55,15 +84,18 @@ bool ADCInput::setMode(uint8_t mode=0){
  */
 uint16_t ADCInput::calibrateAREF(){
     // reset ADC to default mode for highest precision.
-    uint8_t oldMode = curMode;
-    setMode(0);
-    analogReadRes(16);
-    analogRead(INTERNAL_REF_PORT);
+    //uint8_t oldMode = curMode;
+    //setMode(0);
+    adc->adc0->setResolution(16);
+#ifdef ADC_DUAL_ADCS
+    adc->adc1->setResolution(16);
+#endif
+    adc->analogRead(INTERNAL_REF_PORT);
     delay(200);
-    uint16_t rangemV = INTERNAL_REF_MV * ((1L<<16)-1) / analogRead(INTERNAL_REF_PORT);
+    uint16_t rangemV = INTERNAL_REF_MV * adc->adc0->getMaxValue() / adc->analogRead(INTERNAL_REF_PORT);
 
     // set ADC to previous mode
-    setMode(oldMode);
+    setMode(curMode);
     read();
 
     return rangemV;
@@ -73,7 +105,7 @@ uint16_t ADCInput::calibrateAREF(){
  * Return ADC clock in Hz. This is only useful to estimate sampling rate.
  */
 uint32_t ADCInput::getClock(){
-    return F_CPU/8;
+    return 0;
 }
 
 /*
@@ -83,4 +115,4 @@ uint32_t ADCInput::getSampleRate(){
     return ADCInput::getClock() / ADC_CLOCK_TO_SAMPLING;
 }
 
-#endif /* __MK20DX256__ */
+#endif /* defined(__MK20DX256__) || defined(__MKL26Z64__) */
