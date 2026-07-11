@@ -1,0 +1,30 @@
+name: Arduino
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        board:
+          - arduino:avr:uno
+          - teensy:avr:teensy31
+          - teensy:avr:teensyLC
+          - adafruit:samd:adafruit_feather_m0
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install arduino-cli and libraries
+        run: make setup
+      - name: Build
+        run: make all TARGET=${{ matrix.board }}

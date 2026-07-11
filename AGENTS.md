@@ -29,6 +29,7 @@ tiny_scope/
 │   └── scope.h/cpp         # Scope: waveform/grid/voltmeter rendering
 ├── .devcontainer/          # Dev container: arduino-cli, PlatformIO, simavr
 ├── .claude/skills/         # Project skills for agent work (building, verify)
+├── .github/workflows/      # CI: arduino.yml + platformio.yml build matrices
 ├── Makefile                # arduino-cli build automation
 ├── arduino-cli.yaml        # arduino-cli config (board indexes, .arduino dirs)
 ├── platformio.ini          # PlatformIO envs: uno, teensy31, teensylc,

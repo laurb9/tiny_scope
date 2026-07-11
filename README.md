@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/laurb9/tiny_scope.svg?branch=master)](https://travis-ci.com/laurb9/tiny_scope)
+[![Arduino](https://github.com/laurb9/tiny_scope/actions/workflows/arduino.yml/badge.svg)](https://github.com/laurb9/tiny_scope/actions/workflows/arduino.yml)
+[![PlatformIO](https://github.com/laurb9/tiny_scope/actions/workflows/platformio.yml/badge.svg)](https://github.com/laurb9/tiny_scope/actions/workflows/platformio.yml)
 
 Tiny Scope for Arduino
 ======================
