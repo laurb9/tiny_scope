@@ -72,9 +72,26 @@ Parts
 - <a href="http://arduino.cc/en/Main/Software">Arduino IDE</a>
 - type B USB cable, few jumper wires
 
+Building
+========
+With arduino-cli (downloaded automatically into `.arduino/`):
+
+    make setup                # one-time: arduino-cli, board indexes, libraries
+    make all                  # default TARGET=arduino:avr:uno
+    make all TARGET=teensy:avr:teensy31
+    make all TARGET=adafruit:samd:adafruit_feather_m0
+
+With [PlatformIO](https://platformio.org/):
+
+    pio run                   # all boards: uno, teensy31, teensylc, adafruit_feather_m0, esp32dev
+    pio run -e uno            # just one
+
+Or use the Arduino IDE with the Library Manager (below), or open the repo in
+VS Code and "Reopen in Container" for a ready-made build environment.
+
 Libraries
 =========
-Either use Sketch -> Import Library or make a libraries folder and drop them in there.
-- Adafruit_SSD1306 from https://github.com/adafruit/Adafruit_SSD1306
-  - Must edit Adafruit_SSD1306.h to pick the set display type to SSD1306_128_64
-- Adafruit_GFX from https://github.com/adafruit/Adafruit-GFX-Library
+Installed automatically by `make setup` and PlatformIO; in the Arduino IDE use
+Library Manager:
+- Adafruit SSD1306 (with its Adafruit GFX / BusIO dependencies)
+- Teensy boards: the ADC library ships with Teensyduino
