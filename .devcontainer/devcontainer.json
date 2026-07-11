@@ -1,0 +1,31 @@
+{
+	"name": "Arduino & C++ Development",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+
+	"workspaceFolder": "/workspaces/tiny_scope",
+	"mounts": [
+		{
+			"source": "arduino-cli",
+			"target": "/workspaces/tiny_scope/.arduino",
+			"type": "volume"
+		}
+	],
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash"
+			},
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cpptools-themes",
+				"eamodio.gitlens",
+				"platformio.platformio-ide"
+			]
+		}
+	},
+
+	"postCreateCommand": "sudo chown vscode /workspaces/tiny_scope/.arduino && make setup",
+	"remoteUser": "vscode"
+}
