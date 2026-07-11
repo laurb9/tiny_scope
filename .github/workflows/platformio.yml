@@ -1,0 +1,35 @@
+name: PlatformIO
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - uno
+          - teensy31
+          - teensylc
+          - adafruit_feather_m0
+          - esp32dev
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install PlatformIO
+        run: pip install platformio
+      - name: Build
+        run: pio run -e ${{ matrix.env }}
