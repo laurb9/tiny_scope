@@ -38,7 +38,7 @@ bool ADCInput::init(uint8_t newInput, uint8_t mode){
     bits = ADC_BITS;
     pinMode(input, INPUT);
     if (input <= 5)
-        sbi(DIDR0, 1 << input); // Digital input buffer disable (reduce power consumption)
+        sbi(DIDR0, input); // Digital input buffer disable (reduce power consumption)
     return ADCInput::setMode(mode);
 }
 
@@ -73,7 +73,7 @@ bool ADCInput::setMode(uint8_t mode){
     if (ADCInput::setPrescaler(mode)){
         curMode = mode;
     }
-    return (curMode = mode);
+    return (curMode == mode);
 }
 
 /*

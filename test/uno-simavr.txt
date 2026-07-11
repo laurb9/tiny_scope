@@ -1,0 +1,8 @@
+sim: display OK..
+sim: init OK..
+sim: vref mV=3270..
+sim: adc modes=6..
+sim: sample rate Hz=9615..
+sim: capture samples=64..
+sim: flatline YES..
+sim: TESTS COMPLETE..

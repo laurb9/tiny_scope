@@ -46,6 +46,17 @@ public:
 // Enable PWM outputs on pins 9 and 5 for testing (see setup()). Comment out to disable.
 #define ENABLE_PWM
 
+// How long to show the splash screen (ms). Overridden for emulator runs.
+#ifndef SPLASH_DELAY_MS
+#define SPLASH_DELAY_MS 4000
+#endif
+
+// Samples per capture: default one per pixel column. The simavr test build
+// overrides this - its serial trace buffers use the RAM headroom this needs.
+#ifndef CAPTURE_SAMPLES
+#define CAPTURE_SAMPLES SCREEN_WIDTH
+#endif
+
 /*
  * End Configurable parameters
  ****************************************************************************/
@@ -79,16 +90,26 @@ void displaySplash(){
 }
 
 void setup(){
+#ifdef SIMAVR_TEST
+    Serial.begin(115200);
+#endif
+    delay(100);  // give time for display to init; if display blank increase delay
+    // begin() allocates the 1KB framebuffer: do it first, while the heap is
+    // empty, and stop here if it fails - drawing without a buffer corrupts memory
+    if (!display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS)){
+#ifdef SIMAVR_TEST
+        Serial.println(F("sim: display.begin FAIL"));
+#endif
+        for (;;);
+    }
+    display.setRotation(2);
     ADCInput adc = ADCInput();
     adc.init(ADC_PIN, EEPROM.read(ADC_MODE_ADDR));
     uint16_t aref = adc.calibrateAREF();
-    int success = capture.init(adc, SCREEN_WIDTH, (aref) ? aref : AREF_MV);
-    delay(100);  // give time for display to init; if display blank increase delay
-    display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_I2C_ADDRESS);
-    display.setRotation(2);
+    int success = capture.init(adc, CAPTURE_SAMPLES, (aref) ? aref : AREF_MV);
     // Configure capture one sample per pixel (SCREEN_WIDTH samples)
     displaySplash();
-    delay(4000);
+    delay(SPLASH_DELAY_MS);
     if (success){
         display.print(F("Reading A/D data..."));
     } else {
@@ -115,6 +136,19 @@ void setup(){
      */
     pinMode(MODE_BUTTON_PIN, INPUT);
     digitalWrite(MODE_BUTTON_PIN, HIGH);
+
+#ifdef SIMAVR_TEST
+    // Trace state over serial so test/simavr-run.sh can verify boot (no-op in normal builds)
+    Serial.println(F("sim: display OK"));
+    Serial.print(F("sim: init "));
+    Serial.println(success ? F("OK") : F("FAIL"));
+    Serial.print(F("sim: vref mV="));
+    Serial.println(capture.rangemV);
+    Serial.print(F("sim: adc modes="));
+    Serial.println(capture.adc.getModeCount());
+    Serial.print(F("sim: sample rate Hz="));
+    Serial.println(capture.adc.getSampleRate());
+#endif
 }
 
 /*
@@ -159,6 +193,17 @@ void loop(){
         scope.displayScope(capture);
     }
     display.display();
+
+#ifdef SIMAVR_TEST
+    static uint8_t traceLoops = 0;
+    if (traceLoops < 5 && ++traceLoops == 5){
+        Serial.print(F("sim: capture samples="));
+        Serial.println(capture.samples);
+        Serial.print(F("sim: flatline "));
+        Serial.println(scope.isFlatLine(capture) ? F("YES") : F("NO"));
+        Serial.println(F("sim: TESTS COMPLETE"));
+    }
+#endif
 
     setADCMode();
     // displaying at max 20fps

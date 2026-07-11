@@ -33,11 +33,16 @@ pio run                        # if platformio.ini exists, all default envs
 - Watch the flash/RAM summary on the Uno build — it runs close to the 32KB/2KB limits.
   Call out significant size increases in the PR.
 
-## 3. simavr (when test/ exists)
+## 3. simavr
 
 ```bash
-make sim-test    # run the firmware on an emulated ATmega328P and check the baseline
+make sim-test           # run the firmware on an emulated ATmega328P, compare to baseline
+make sim-test-update    # regenerate test/uno-simavr.txt after intentional trace changes
 ```
+
+This catches boot crashes and memory exhaustion that compilation cannot (it already
+caught a display-buffer OOM and an out-of-bounds ADC mode). Requires simavr and
+PlatformIO (both in the devcontainer).
 
 ## 4. Hardware caveat
 

@@ -33,3 +33,21 @@ jobs:
         run: pip install platformio
       - name: Build
         run: pio run -e ${{ matrix.env }}
+
+  sim-test:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install PlatformIO
+        run: pip install platformio
+      - name: Install simavr
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends simavr
+      - name: Run firmware under simavr
+        run: make sim-test
