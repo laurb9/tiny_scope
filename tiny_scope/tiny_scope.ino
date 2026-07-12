@@ -179,6 +179,9 @@ void setADCMode(){
 
 void loop(){
     static Scope scope = Scope(display, 0, SCREEN_WIDTH, 0, 47);
+    // Use low-noise quiet capture once the signal is steady (voltmeter) or at
+    // the slowest ADC mode, where the per-sample sleep latency doesn't matter.
+    static bool quietCapture = false;
 
     if (!capture.samples){
         // leave "Out of memory" printed by setup() onscreen.
@@ -186,12 +189,16 @@ void loop(){
         return;
     }
 
-    capture.capture();
+    capture.capture(quietCapture);
     capture.tomV();
+
+    // isFlatLine() mutates a rolling-average state, so call it exactly once per
+    // loop and reuse the result (this also fixes a preexisting double-sample quirk).
+    bool flatLine = scope.isFlatLine(capture);
 
     display.clearDisplay();
     // Enable voltmeter mode if line is flat
-    if (scope.isFlatLine(capture)){
+    if (flatLine){
         scope.displayVoltMeter(capture);
     } else {
         scope.displayScope(capture);
@@ -204,10 +211,14 @@ void loop(){
         Serial.print(F("sim: capture samples="));
         Serial.println(capture.samples);
         Serial.print(F("sim: flatline "));
-        Serial.println(scope.isFlatLine(capture) ? F("YES") : F("NO"));
+        Serial.println(flatLine ? F("YES") : F("NO"));
         Serial.println(F("sim: TESTS COMPLETE"));
     }
 #endif
+
+    // mode 0 is the slowest prescaler on AVR; on portable builds getMode() is
+    // always 0 and readMultiQuiet falls back to readMulti, so behavior is unchanged.
+    quietCapture = flatLine || capture.adc.getMode() == 0;
 
     setADCMode();
     // displaying at max 20fps

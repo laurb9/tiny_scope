@@ -28,7 +28,7 @@ int Capture::init(ADCInput adc_in, unsigned samples_in, uint16_t rangemV_in){
  * Capture the requested number of samples.
  * on return, data contains the raw capture data.
  */
-void Capture::capture(){
+void Capture::capture(bool quiet){
     uint32_t start;
     uint16_t *dataCur;
     uint16_t v;
@@ -57,7 +57,7 @@ void Capture::capture(){
         }
     }
     start = micros();
-    adc.readMulti(dataCur, samples);
+    quiet ? adc.readMultiQuiet(dataCur, samples) : adc.readMulti(dataCur, samples);
     elapsedus = micros() - start;
 }
 

@@ -21,7 +21,7 @@ public:
 
     int init(ADCInput adc, unsigned samples, uint16_t rangemV);
     void calibrate();
-    void capture();
+    void capture(bool quiet=false);
     void tomV();
 };
 

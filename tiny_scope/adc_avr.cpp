@@ -24,7 +24,15 @@
  */
 #ifdef __AVR__
 #include "adc_avr.h"
+#include <avr/sleep.h>
+#include <avr/interrupt.h>
 #if defined(ADCSRA) && defined(ADCL)
+
+// ADC conversion-complete ISR: intentionally empty. It exists only so the CPU
+// wakes from sleep when a conversion finishes (readMultiQuiet sets ADIE).
+// analogRead() in the Arduino AVR core only polls ADIF and never enables ADIE,
+// so there is no conflict with the normal read path.
+EMPTY_INTERRUPT(ADC_vect);
 
 // Actual voltage of Vbg (internal 1.1V ref) in mV. This is different from chip to chip.
 // = VrefMeasured*1100/5.000 (with accurate multimeter). VrefMeasured*1100/3.300 for 3.3V systems.
@@ -96,6 +104,42 @@ void ADCInput::readMulti(uint16_t *buffer, unsigned size){
         sbi(ADCSRA, ADIF);
     }
     cbi(ADCSRA, ADATE);  // Disable free running
+}
+
+/*
+ * Low-noise variant of readMulti() (issue #13).
+ *
+ * Instead of free-running back-to-back conversions, take one single conversion
+ * at a time and put the CPU to sleep for the duration of each. With the core
+ * halted the AVR's ADC noise-canceler suppresses digital switching noise that
+ * would otherwise couple into the sample - a benefit free-running readMulti()
+ * cannot get because it never sleeps. Intended for the voltmeter/steady-signal
+ * display where per-sample sleep latency is irrelevant.
+ *
+ * SLEEP_MODE_IDLE (not SLEEP_MODE_ADC) is deliberate: ADC noise-reduction mode
+ * halts clkIO, which would stop Timer0 (micros/millis) and the PWM test signals.
+ * IDLE keeps clkIO running, so other interrupts (e.g. Timer0) may wake us early;
+ * the inner loop re-checks ADSC and sleeps again until the conversion is done.
+ * This uses the canonical race-free avr-libc sleep pattern (cli/sleep_enable/sei).
+ */
+void ADCInput::readMultiQuiet(uint16_t *buffer, unsigned size){
+    set_sleep_mode(SLEEP_MODE_IDLE);
+    sbi(ADCSRA, ADIF); // clear stale completion flag
+    sbi(ADCSRA, ADIE); // ISR wakes the CPU when conversion completes
+    for (; size; size--){
+        sbi(ADCSRA, ADSC);
+        cli();
+        while (bit_is_set(ADCSRA, ADSC)){
+            sleep_enable();
+            sei();
+            sleep_cpu();   // other interrupts (Timer0) may wake us early; loop re-checks
+            sleep_disable();
+            cli();
+        }
+        sei();
+        *buffer++ = ADCL | (ADCH << 8);
+    }
+    cbi(ADCSRA, ADIE);
 }
 
 /*

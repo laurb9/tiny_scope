@@ -28,7 +28,8 @@
 
 class ADCInput : public ADCBase {
 protected:
-    uint8_t curMode;
+    // curMode is inherited from ADCBase; do not redeclare it here or it would
+    // shadow the base member that getMode() reads.
     bool setPrescaler(uint8_t mode);
 public:
     static const uint8_t prescalers[];
@@ -40,6 +41,7 @@ public:
     uint32_t getClock();       // Hz for information purposes only
     uint32_t getSampleRate();  // Hz for information purposes only
     void readMulti(uint16_t *buffer, unsigned size); // multi-sample read
+    void readMultiQuiet(uint16_t *buffer, unsigned size); // low-noise multi-sample read
 
     inline uint16_t read() __attribute__((always_inline)){
         return analogRead(input);
