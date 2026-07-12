@@ -61,6 +61,11 @@ public:
             *buffer++ = ADCBase::readFast();
         }
     };
+    // current sampling mode (0 - getModeCount()-1)
+    uint8_t getMode(){ return curMode; }
+    // low-noise bulk read. AVR overrides this with a CPU-idle version; the
+    // portable fallback just defers to readMulti() so other platforms are unaffected.
+    void readMultiQuiet(uint16_t *buffer, unsigned size){ readMulti(buffer, size); }
     // calibration function, return corrected AREF based on Vbg measured against it.
     uint16_t calibrateAREF(){
         return 0;
