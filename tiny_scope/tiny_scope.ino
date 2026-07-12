@@ -30,11 +30,15 @@ public:
 #define ADC_PIN 1
 
 // Which digital input the button is on - use to cycle through all the ADC modes
+// (enum, not #define: PlatformIO's .ino conversion pass registers all
+// #defines while ignoring the #if, and warns about a redefinition)
+enum {
 #if defined(ARDUINO_ARCH_SAMD)
-#define MODE_BUTTON_PIN 6
+    MODE_BUTTON_PIN = 6
 #else
-#define MODE_BUTTON_PIN 7
+    MODE_BUTTON_PIN = 7
 #endif
+};
 
 // ADC reference voltage (mV). Default 5000 for AVR 5V, 3300 for 3.3V boards
 // Change this if AREF is connected to a different voltage reference
